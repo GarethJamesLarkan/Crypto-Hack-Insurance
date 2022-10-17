@@ -3,10 +3,16 @@ pragma solidity =0.8.13;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract FundManager is ERC20{
+contract CHToken is ERC20{
 
-    constructor() {
+    constructor() ERC20("CryptoHack Token", "CHT") {
 
+        mint(msg.sender, 1000);
+
+    }
+
+    function mint(address to, uint256 amount) public {
+        _mint(to, amount);
     }
     
     
