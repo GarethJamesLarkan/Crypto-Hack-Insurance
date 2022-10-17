@@ -62,8 +62,8 @@ contract Insurance {
 
     function calculatePolicyInstallments(uint256 _value, uint256 _holdingCompanyId) public returns (uint256) {
         
-        //If the user would pay the total value in 5 years of installments, what would they pay per month
-        uint256 expected5YearInstallment = _value / 60;
+        //If the user would pay the total value in 10 years of installments, what would they pay per month
+        uint256 expected5YearInstallment = _value / 120;
         uint256 safetyAdjustment = 100 - holdingCompanies[_holdingCompanyId].safetyRating;
         uint256 policyInstallment = expected5YearInstallment + ((expected5YearInstallment * safetyAdjustment) / 100);
 
