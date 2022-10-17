@@ -14,6 +14,14 @@ contract Insurance {
     uint256 public numberOfPolicies;
 
     mapping(uint256 => Policy) public policies;
+
+    constructor() {
+
+    }
+
+    function createPolicy() {
+        
+    }
     
     
 }
