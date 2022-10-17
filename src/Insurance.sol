@@ -20,6 +20,10 @@ contract Insurance {
     }
 
     function createPolicy() {
+
+    }
+
+    function calculatePolicyInstallments() internal {
         
     }
     
