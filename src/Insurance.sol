@@ -8,7 +8,8 @@ contract Insurance {
         uint256 monthlyInstallment;
         uint256 numberOfInstallments;
         address owner;
-
     }
+
+    uint256 public numberOfPolicies;
     
 }
