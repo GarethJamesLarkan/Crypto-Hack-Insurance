@@ -44,7 +44,7 @@ contract Insurance {
     }
 
     function createPolicy(uint256 _cryptoValueToBeInsured, HoldingCompany memory _company) public {
-        uint256 installment = calculatePolicyInstallments(_cryptoValueToBeInsured, _company);
+        uint256 installment = calculatePolicyInstallments(_cryptoValueToBeInsured, _company.id);
         
         policies[numberOfPolicies] = Policy({
             policyUniqueIdentifier: numberOfPolicies,
@@ -60,11 +60,11 @@ contract Insurance {
 
     }
 
-    function calculatePolicyInstallments(uint256 _value, HoldingCompany memory _company) public returns (uint256) {
+    function calculatePolicyInstallments(uint256 _value, uint256 _holdingCompanyId) public returns (uint256) {
         
         //If the user would pay the total value in 5 years of installments, what would they pay per month
         uint256 expected5YearInstallment = _value / 60;
-        uint256 safetyAdjustment = 100 - _company.safetyRating;
+        uint256 safetyAdjustment = 100 - holdingCompanies[_holdingCompanyId].safetyRating;
         uint256 policyInstallment = expected5YearInstallment + ((expected5YearInstallment * safetyAdjustment) / 100);
 
         return policyInstallment;

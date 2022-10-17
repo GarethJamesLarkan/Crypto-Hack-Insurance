@@ -26,7 +26,13 @@ contract InsuranceTests is Test {
       
     }
 
-    function testCreatePolicy() public {
-        
+    function testCalculatePolicyInstallments() public {
+        insuranceInstance.createHoldingCompany(50);
+        uint256 val = insuranceInstance.calculatePolicyInstallments(250000, 0);
+        assertEq(val, 6249);
+
+        insuranceInstance.createHoldingCompany(95);
+        uint256 val2 = insuranceInstance.calculatePolicyInstallments(500000, 1);
+        assertEq(val2, 8749);
     }
 }
