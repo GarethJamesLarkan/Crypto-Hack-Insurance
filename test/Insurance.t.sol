@@ -3,19 +3,26 @@ pragma solidity >=0.8.12;
 
 import "forge-std/Test.sol";
 import "../src/Insurance.sol";
+import "../src/FundManager.sol";
+import "../src/CHToken.sol";
 
 import {console} from "forge-std/console.sol";
 
 contract InsuranceTests is Test {
 
     Insurance insuranceInstance;
+    FundManager managerInstance;
+
+    CHToken token;
    
     address alice = vm.addr(3);
 
     function setUp() public {
+        
+        token = new CHToken();
+        insuranceInstance = new Insurance(address(token));
+        managerInstance = new FundManager(address(token), address(insuranceInstance));
 
-        insuranceInstance = new Insurance();
-       
     }
 
     function testCreateHoldingCompany() public {
@@ -62,6 +69,19 @@ contract InsuranceTests is Test {
         assertEq(numOfInstallments, 0);
         assertEq(holdingcompany, 0);
         assertEq(owner, address(alice));
+
+    }
+
+    function testCreatingLiquidityProvider() public {
+        vm.startPrank(alice);
+
+        token.mint(alice, 300000);
+        token.approve(address(insuranceInstance), 300000);
+
+        insuranceInstance.createNewLiquidityProvider(20000, address(managerInstance));
+
+        assertEq(token.balanceOf(address(managerInstance)), 20000);
+        assertEq(token.balanceOf(alice), 10000);
 
     }
 }

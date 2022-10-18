@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity =0.8.13;
 
-
 import {console} from "forge-std/console.sol";
+import "./Interfaces/IFundManager.sol";
+import "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 contract Insurance {
+
+    IFundManager manager;
+    IERC20 usdc;
 
     struct Policy {
         uint256 policyUniqueIdentifier;
@@ -21,16 +25,36 @@ contract Insurance {
         uint256 safetyRating;
     }
 
+    struct LiquidityProvider {
+        address wallet;
+        uint256 valueOfLiquidity;
+        uint256 policyProfits;
+    }
+
     uint256 public numberOfPolicies = 0;
     uint256 public numberOfHoldingCompanies = 0;
+    uint256 public numberOfLiquidityProviders = 0;
 
     mapping(uint256 => Policy) public policies;
     mapping(uint256 => HoldingCompany) public holdingCompanies;
+    mapping(uint256 => LiquidityProvider) public providers;
 
     mapping(address => uint256) public numberOfPoliciesPerUser;
 
-    constructor() {
+    constructor(address _usdcAddress) {
+        usdc = IERC20(_usdcAddress);
+    }
 
+    function createNewLiquidityProvider(uint256 _liquidityValue, address _managerAddress) public {
+        providers[numberOfLiquidityProviders] = LiquidityProvider({
+            wallet: msg.sender,
+            valueOfLiquidity: _liquidityValue,
+            policyProfits: 0
+        });
+
+        addLiquidity(_liquidityValue, _managerAddress);
+
+        numberOfLiquidityProviders++;
     }
 
     function addPolicyPayment(uint256 _amount, uint256 _policyId) public {
@@ -38,6 +62,12 @@ contract Insurance {
 
         policies[_policyId].numberOfInstallments++;
         policies[_policyId].valueOfInstallments += _amount;
+    }
+
+    function addLiquidity(uint256 _amount, address _fundManager) public {
+        
+        usdc.transferFrom(msg.sender, _fundManager, _amount);
+
     }
 
     function createHoldingCompany(uint256 _safetyRating) public {

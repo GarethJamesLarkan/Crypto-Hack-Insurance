@@ -19,7 +19,7 @@ contract FundManagerTests is Test {
     function setUp() public {
 
         token = new CHToken();
-        insuranceInstance = new Insurance();
+        insuranceInstance = new Insurance(address(token));
         managerInstance = new FundManager(address(token), address(insuranceInstance));
     }
 

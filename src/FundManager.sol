@@ -14,6 +14,10 @@ contract FundManager {
         insurance = IInsurance(_insuranceAddress);
     }   
 
+    function getAddress() public view returns (address) {
+        return address(this);
+    }
+
     function payPolicyInstallment(uint256 _policyId, uint256 _amount) public {
 
         require(_policyId <= insurance.getNumberOfPolicies(_policyId), "Invalid policy ID");
