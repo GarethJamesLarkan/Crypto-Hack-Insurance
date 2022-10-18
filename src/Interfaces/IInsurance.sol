@@ -7,4 +7,8 @@ interface IInsurance {
 
     function getNumberOfPolicies(uint256 _policyId) external view returns (uint256);
 
+    function getTotalLiquidity() external view returns(uint256);
+
+    function getNumberOfLiquidityProviders() external view returns(uint256);
+
 } 

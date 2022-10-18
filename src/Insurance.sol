@@ -26,19 +26,11 @@ contract Insurance {
         uint256 safetyRating;
     }
 
-    struct LiquidityProvider {
-        address wallet;
-        uint256 valueOfLiquidity;
-        uint256 policyProfits;
-    }
-
     uint256 public numberOfPolicies = 0;
     uint256 public numberOfHoldingCompanies = 0;
-    uint256 public numberOfLiquidityProviders = 0;
 
     mapping(uint256 => Policy) public policies;
     mapping(uint256 => HoldingCompany) public holdingCompanies;
-    mapping(address => LiquidityProvider) public providers;
 
     mapping(address => uint256) public numberOfPoliciesPerUser;
 
@@ -46,30 +38,11 @@ contract Insurance {
         usdc = IERC20(_usdcAddress);
     }
 
-    function createNewLiquidityProvider(uint256 _liquidityValue, address _managerAddress) public {
-        
-        addLiquidity(_liquidityValue, _managerAddress);
-
-        providers[msg.sender] = LiquidityProvider({
-            wallet: msg.sender,
-            valueOfLiquidity: _liquidityValue,
-            policyProfits: 0
-        });
-
-        numberOfLiquidityProviders++;
-    }
-
     function addPolicyPayment(uint256 _amount, uint256 _policyId) public {
         require(_amount == policies[_policyId].monthlyInstallment, "Incorrect payment amount");
 
         policies[_policyId].numberOfInstallments++;
         policies[_policyId].valueOfInstallments += _amount;
-    }
-
-    function addLiquidity(uint256 _amount, address _fundManager) public {
-        
-        providers[msg.sender].valueOfLiquidity += _amount;
-        usdc.transferFrom(msg.sender, _fundManager, _amount);
 
     }
 
@@ -115,6 +88,5 @@ contract Insurance {
     function getNumberOfPolicies(uint256 _policyId) public view returns (uint256) {
         return numberOfPolicies;
     }
-    
     
 }

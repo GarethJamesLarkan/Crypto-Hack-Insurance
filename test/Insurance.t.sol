@@ -78,12 +78,12 @@ contract InsuranceTests is Test {
         token.mint(alice, 300000);
         token.approve(address(insuranceInstance), 300000);
 
-        insuranceInstance.createNewLiquidityProvider(20000, address(managerInstance));
+        managerInstance.createNewLiquidityProvider(20000, address(managerInstance));
 
         assertEq(token.balanceOf(address(managerInstance)), 20000);
         assertEq(token.balanceOf(alice), 280000);
 
-        (, uint256 valueOfLiquidity,) = insuranceInstance.providers(alice);
+        (,, uint256 valueOfLiquidity,) = managerInstance.providers(managerInstance.providerToId(alice));
 
         assertEq(valueOfLiquidity, 20000);
 
@@ -95,21 +95,21 @@ contract InsuranceTests is Test {
         token.mint(alice, 300000);
         token.approve(address(insuranceInstance), 300000);
 
-        insuranceInstance.createNewLiquidityProvider(20000, address(managerInstance));
+        managerInstance.createNewLiquidityProvider(20000, address(managerInstance));
 
         assertEq(token.balanceOf(address(managerInstance)), 20000);
         assertEq(token.balanceOf(alice), 280000);
 
-        (, uint256 valueOfLiquidity,) = insuranceInstance.providers(alice);
+        (,, uint256 valueOfLiquidity,) = managerInstance.providers(managerInstance.providerToId(alice));
 
         assertEq(valueOfLiquidity, 20000);
 
-        insuranceInstance.addLiquidity(50000, address(managerInstance));
+        managerInstance.addLiquidity(50000, address(managerInstance));
 
         assertEq(token.balanceOf(address(managerInstance)), 70000);
         assertEq(token.balanceOf(alice), 230000);
 
-        (, uint256 valueOfLiquidity2,) = insuranceInstance.providers(alice);
+        (,, uint256 valueOfLiquidity2,) = managerInstance.providers(managerInstance.providerToId(alice));
 
         assertEq(valueOfLiquidity2, 70000);
     }
