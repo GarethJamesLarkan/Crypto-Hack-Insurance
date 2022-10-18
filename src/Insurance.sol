@@ -11,6 +11,7 @@ contract Insurance {
         uint256 policyValue;
         uint256 monthlyInstallment;
         uint256 numberOfInstallments;
+        uint256 valueOfInstallments;
         uint256 companyFundsInvestedIn;
         address owner;
     }
@@ -32,6 +33,13 @@ contract Insurance {
 
     }
 
+    function addPolicyPayment(uint256 _amount, uint256 _policyId) public {
+        require(_amount == policies[_policyId].monthlyInstallment, "Incorrect payment amount");
+
+        policies[_policyId].numberOfInstallments++;
+        policies[_policyId].valueOfInstallments += _amount;
+    }
+
     function createHoldingCompany(uint256 _safetyRating) public {
         require(_safetyRating <= 100, "Invalid rating");
 
@@ -51,6 +59,7 @@ contract Insurance {
             policyValue: _cryptoValueToBeInsured,
             monthlyInstallment: installment,
             numberOfInstallments: 0,
+            valueOfInstallments: 0,
             companyFundsInvestedIn: _holdingCompanyId,
             owner: msg.sender
         });
@@ -68,6 +77,10 @@ contract Insurance {
         uint256 policyInstallment = expected15YearInstallment + ((expected15YearInstallment * safetyAdjustment) / 100);
 
         return policyInstallment;
+    }
+
+    function getNumberOfPolicies(uint256 _policyId) public view returns (uint256) {
+        return numberOfPolicies;
     }
     
     

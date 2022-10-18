@@ -53,10 +53,12 @@ contract InsuranceTests is Test {
         insuranceInstance.createHoldingCompany(50);
         insuranceInstance.createPolicy(250000, 0);
 
-        (uint256 id, uint256 value, uint256 installment, uint256 numOfInstallments, uint256 holdingcompany, address owner) = insuranceInstance.policies(0); 
+        (uint256 id, uint256 value, uint256 installment, uint256 numOfInstallments, uint256 valueOfInstallments, uint256 holdingcompany, address owner) = insuranceInstance.policies(0); 
+        
         assertEq(insuranceInstance.numberOfPolicies(), 1);
         assertEq(value, 250000);
         assertEq(installment, 2082);
+        assertEq(numOfInstallments, 0);
         assertEq(numOfInstallments, 0);
         assertEq(holdingcompany, 0);
         assertEq(owner, address(alice));
