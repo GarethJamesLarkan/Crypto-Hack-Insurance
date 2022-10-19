@@ -97,12 +97,16 @@ contract Insurance {
         return policyInstallment;
     }
 
-    function getNumberOfPolicies(uint256 _policyId) public view returns (uint256) {
+    function getNumberOfPolicies() public view returns (uint256) {
         return numberOfPolicies;
     }
 
     function getPolicyValue(uint256 _policyId) public view returns (uint256) {
         return policies[_policyId].policyValue;
+    }
+
+    function getPolicyOwner(uint256 _policyId) public view returns (address) {
+        return policies[_policyId].owner;
     }
 
     function addHack(uint256 _policyId, uint256 _amountPaid, bool _accepted) public {
@@ -114,7 +118,7 @@ contract Insurance {
             policyId: _policyId,
             amountPaidOut: _amountPaid,
             accepted: _accepted,
-            timePaidOut: block.timestamp
+            timeOfPayout: block.timestamp
         });
 
         policies[_policyId].closed = true;

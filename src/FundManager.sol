@@ -63,7 +63,7 @@ contract FundManager {
 
     function payPolicyInstallment(uint256 _policyId, uint256 _amount) public {
 
-        require(_policyId <= insurance.getNumberOfPolicies(_policyId), "Invalid policy ID");
+        require(_policyId <= insurance.getNumberOfPolicies(), "Invalid policy ID");
 
         usdc.transferFrom(msg.sender, address(this), _amount);
         insurance.addPolicyPayment(_amount, _policyId);
@@ -85,8 +85,8 @@ contract FundManager {
     } 
 
     function claimHack(uint256 _policyId) public {
-        require(_providerId <= numberOfLiquidityProviders, "Invalid provider ID");
-        require(providerToId[msg.sender] == _providerId, "Not correct caller");
+        require(_policyId <= insurance.getNumberOfPolicies(), "Invalid provider ID");
+        require(insurance.getPolicyOwner(_policyId) == msg.sender, "Not correct caller");
 
         uint256 policyVal = insurance.getPolicyValue(_policyId);
 
