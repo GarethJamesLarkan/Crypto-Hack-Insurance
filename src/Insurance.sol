@@ -18,6 +18,7 @@ contract Insurance {
         uint256 numberOfInstallments;
         uint256 valueOfInstallments;
         uint256 companyFundsInvestedIn;
+        bool closed;
         address owner;
     }
 
@@ -26,12 +27,21 @@ contract Insurance {
         uint256 safetyRating;
     }
 
+    struct Hack {
+        uint256 hackId;
+        uint256 policyId;
+        uint256 amountPaidOut;
+        bool accepted;
+        uint256 timeOfPayout;
+    }
+
     uint256 public numberOfPolicies;
     uint256 public numberOfHoldingCompanies;
+    uint256 public numberOfHacks;
 
     mapping(uint256 => Policy) public policies;
     mapping(uint256 => HoldingCompany) public holdingCompanies;
-
+    mapping(uint256 => Hack) public hacks;
     mapping(address => uint256) public numberOfPoliciesPerUser;
 
     constructor(address _usdcAddress) {
@@ -40,6 +50,7 @@ contract Insurance {
 
     function addPolicyPayment(uint256 _amount, uint256 _policyId) public {
         require(_amount == policies[_policyId].monthlyInstallment, "Incorrect payment amount");
+        require(policies[_policyId].closed == false, "Policy has been closed");
 
         policies[_policyId].numberOfInstallments++;
         policies[_policyId].valueOfInstallments += _amount;
@@ -67,6 +78,7 @@ contract Insurance {
             numberOfInstallments: 0,
             valueOfInstallments: 0,
             companyFundsInvestedIn: _holdingCompanyId,
+            closed: false,
             owner: msg.sender
         });
 
@@ -87,6 +99,27 @@ contract Insurance {
 
     function getNumberOfPolicies(uint256 _policyId) public view returns (uint256) {
         return numberOfPolicies;
+    }
+
+    function getPolicyValue(uint256 _policyId) public view returns (uint256) {
+        return policies[_policyId].policyValue;
+    }
+
+    function addHack(uint256 _policyId, uint256 _amountPaid, bool _accepted) public {
+
+        require(policies[_policyId].closed == false, "Policy has been closed");
+
+        hacks[numberOfHacks] = Hack({
+            hackId: numberOfHacks,
+            policyId: _policyId,
+            amountPaidOut: _amountPaid,
+            accepted: _accepted,
+            timePaidOut: block.timestamp
+        });
+
+        policies[_policyId].closed = true;
+
+        numberOfHacks++;
     }
     
 }

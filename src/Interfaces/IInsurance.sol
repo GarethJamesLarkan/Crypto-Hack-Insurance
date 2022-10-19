@@ -11,4 +11,8 @@ interface IInsurance {
 
     function getNumberOfLiquidityProviders() external view returns(uint256);
 
+    function getPolicyValue(uint256 _policyId) external view returns (uint256);
+
+    function addHack(uint256 _policyId, uint256 _amountPaid, bool _accepted) external;
+
 } 

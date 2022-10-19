@@ -83,5 +83,16 @@ contract FundManager {
 
         }
     } 
+
+    function claimHack(uint256 _policyId) public {
+        require(_providerId <= numberOfLiquidityProviders, "Invalid provider ID");
+        require(providerToId[msg.sender] == _providerId, "Not correct caller");
+
+        uint256 policyVal = insurance.getPolicyValue(_policyId);
+
+        insurance.addHack(_policyId, policyVal, true);
+
+        usdc.transfer(msg.sender, policyVal);
+    }
     
 }
