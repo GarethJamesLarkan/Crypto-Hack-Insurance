@@ -6,7 +6,6 @@ import "./Interfaces/IInsurance.sol";
 
 import {console} from "forge-std/console.sol";
 
-
 contract FundManager {
 
     IERC20 usdc;

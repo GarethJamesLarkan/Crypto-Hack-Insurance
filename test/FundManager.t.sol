@@ -394,8 +394,4 @@ contract FundManagerTests is Test {
         vm.expectRevert("Policy has been closed");
         managerInstance.claimHack(0);
     }
-
-
-
-
 }
