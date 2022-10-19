@@ -26,8 +26,8 @@ contract Insurance {
         uint256 safetyRating;
     }
 
-    uint256 public numberOfPolicies = 0;
-    uint256 public numberOfHoldingCompanies = 0;
+    uint256 public numberOfPolicies;
+    uint256 public numberOfHoldingCompanies;
 
     mapping(uint256 => Policy) public policies;
     mapping(uint256 => HoldingCompany) public holdingCompanies;

@@ -12,7 +12,7 @@ contract FundManager {
     IERC20 usdc;
     IInsurance insurance;
 
-    uint256 public totalLiquidityProvided = 0;
+    uint256 public totalLiquidityProvided;
 
     struct LiquidityProvider {
         uint256 id;
@@ -21,9 +21,8 @@ contract FundManager {
         uint256 policyProfits;
     }
 
-    uint256 public numberOfLiquidityProviders = 0;
+    uint256 public numberOfLiquidityProviders;
     
-    mapping(address => uint256) public liquidityProvidedPerUser;
     mapping(uint256 => LiquidityProvider) public providers;
     mapping(address => uint256) public providerToId;
 
@@ -34,32 +33,30 @@ contract FundManager {
 
     function createNewLiquidityProvider(uint256 _liquidityValue, address _managerAddress) public {
         
-        addLiquidity(_liquidityValue, _managerAddress);
+        addLiquidity(msg.sender, _liquidityValue, _managerAddress);
 
         providers[numberOfLiquidityProviders] = LiquidityProvider({
             id: numberOfLiquidityProviders,
             wallet: msg.sender,
-            valueOfLiquidity: _liquidityValue,
+            valueOfLiquidity: 0,
             policyProfits: 0
         });
 
         providerToId[msg.sender] = numberOfLiquidityProviders;
-
         numberOfLiquidityProviders++;
     }
 
-     function addLiquidity(uint256 _amount, address _fundManager) public {
+     function addLiquidity(address _sender, uint256 _amount, address _fundManager) public {
         
-        providers[providerToId[msg.sender]].valueOfLiquidity += _amount;
+        providers[providerToId[_sender]].valueOfLiquidity += _amount;
         totalLiquidityProvided += _amount;
-        liquidityProvidedPerUser[msg.sender] += _amount;
 
-        usdc.transferFrom(msg.sender, _fundManager, _amount);
+        usdc.transferFrom(_sender, _fundManager, _amount);
 
     }
 
-    function getAddress() public view returns (address) {
-        return address(this);
+    function getTotalLiquidity() public view returns (uint256) {
+        return totalLiquidityProvided;
     }
 
     function payPolicyInstallment(uint256 _policyId, uint256 _amount) public {
@@ -76,8 +73,12 @@ contract FundManager {
         for(uint256 x = 0; x < numberOfProviders; x++){
 
             LiquidityProvider memory provider = providers[x];   
-            uint256 portion = totalLiquidity / provider.valueOfLiquidity * 100;
+            uint256 portion = (provider.valueOfLiquidity*100) / (totalLiquidity);
+            console.log(portion);
+            console.log(provider.valueOfLiquidity);
+
             uint256 valueToSend = portion * _amount / 100;
+            console.log(valueToSend);
 
             usdc.transfer(provider.wallet, valueToSend);
 

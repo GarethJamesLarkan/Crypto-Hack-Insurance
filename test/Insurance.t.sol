@@ -71,46 +71,4 @@ contract InsuranceTests is Test {
         assertEq(owner, address(alice));
 
     }
-
-    function testCreatingLiquidityProvider() public {
-        vm.startPrank(alice);
-
-        token.mint(alice, 300000);
-        token.approve(address(insuranceInstance), 300000);
-
-        managerInstance.createNewLiquidityProvider(20000, address(managerInstance));
-
-        assertEq(token.balanceOf(address(managerInstance)), 20000);
-        assertEq(token.balanceOf(alice), 280000);
-
-        (,, uint256 valueOfLiquidity,) = managerInstance.providers(managerInstance.providerToId(alice));
-
-        assertEq(valueOfLiquidity, 20000);
-
-    }
-
-    function testAddLiquidity() public {
-        vm.startPrank(alice);
-
-        token.mint(alice, 300000);
-        token.approve(address(insuranceInstance), 300000);
-
-        managerInstance.createNewLiquidityProvider(20000, address(managerInstance));
-
-        assertEq(token.balanceOf(address(managerInstance)), 20000);
-        assertEq(token.balanceOf(alice), 280000);
-
-        (,, uint256 valueOfLiquidity,) = managerInstance.providers(managerInstance.providerToId(alice));
-
-        assertEq(valueOfLiquidity, 20000);
-
-        managerInstance.addLiquidity(50000, address(managerInstance));
-
-        assertEq(token.balanceOf(address(managerInstance)), 70000);
-        assertEq(token.balanceOf(alice), 230000);
-
-        (,, uint256 valueOfLiquidity2,) = managerInstance.providers(managerInstance.providerToId(alice));
-
-        assertEq(valueOfLiquidity2, 70000);
-    }
 }
