@@ -309,5 +309,93 @@ contract FundManagerTests is Test {
 
     }
 
+    function testClaimHackFailsWhenIncorrectCaller() public {
+        insuranceInstance.createHoldingCompany(50);
+
+        //Give everyone funds
+        token.mint(alice, 300000);
+        token.mint(bob, 300000);
+        token.mint(liquidityProvider1, 300000);
+        token.mint(liquidityProvider2, 300000);
+
+        //Liquidity provider 1 adding themself to the mapping
+        vm.startPrank(liquidityProvider1);
+        managerInstance.createNewLiquidityProvider(address(managerInstance));
+        token.approve(address(managerInstance), 4000000);
+        managerInstance.addLiquidity(0, 20000, address(managerInstance));
+        vm.stopPrank();
+
+        //Alice creating a policy
+        vm.startPrank(alice);
+        token.approve(address(managerInstance), 4000000);
+        insuranceInstance.createPolicy(10000, 0);
+        assertEq(token.balanceOf(alice), 300000);
+        assertEq(token.balanceOf(address(managerInstance)), 20000);
+        vm.stopPrank();
+
+        vm.startPrank(bob);
+        vm.expectRevert("Not correct caller");
+        managerInstance.claimHack(0);
+
+    }
+
+    function testClaimHackFailsWhenIncorrectPolicyID() public {
+        insuranceInstance.createHoldingCompany(50);
+
+        //Give everyone funds
+        token.mint(alice, 300000);
+        token.mint(bob, 300000);
+        token.mint(liquidityProvider1, 300000);
+        token.mint(liquidityProvider2, 300000);
+
+        //Liquidity provider 1 adding themself to the mapping
+        vm.startPrank(liquidityProvider1);
+        managerInstance.createNewLiquidityProvider(address(managerInstance));
+        token.approve(address(managerInstance), 4000000);
+        managerInstance.addLiquidity(0, 20000, address(managerInstance));
+        vm.stopPrank();
+
+        //Alice creating a policy
+        vm.startPrank(alice);
+        token.approve(address(managerInstance), 4000000);
+        insuranceInstance.createPolicy(10000, 0);
+        assertEq(token.balanceOf(alice), 300000);
+        assertEq(token.balanceOf(address(managerInstance)), 20000);
+        vm.expectRevert("Invalid policy ID");
+        managerInstance.claimHack(1);
+
+    }
+
+      function testClaimHackFailsWhenPolicyIsClosed() public {
+        insuranceInstance.createHoldingCompany(50);
+
+        //Give everyone funds
+        token.mint(alice, 300000);
+        token.mint(bob, 300000);
+        token.mint(liquidityProvider1, 300000);
+        token.mint(liquidityProvider2, 300000);
+
+        //Liquidity provider 1 adding themself to the mapping
+        vm.startPrank(liquidityProvider1);
+        managerInstance.createNewLiquidityProvider(address(managerInstance));
+        token.approve(address(managerInstance), 4000000);
+        managerInstance.addLiquidity(0, 20000, address(managerInstance));
+        vm.stopPrank();
+
+        //Alice creating a policy
+        vm.startPrank(alice);
+        token.approve(address(managerInstance), 4000000);
+        insuranceInstance.createPolicy(10000, 0);
+        assertEq(token.balanceOf(alice), 300000);
+        assertEq(token.balanceOf(address(managerInstance)), 20000);
+
+        managerInstance.claimHack(0);
+        
+        vm.expectRevert("Policy has been closed");
+        managerInstance.claimHack(0);
+    }
+
+
+
 
 }

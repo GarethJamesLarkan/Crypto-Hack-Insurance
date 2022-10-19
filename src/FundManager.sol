@@ -85,7 +85,7 @@ contract FundManager {
     } 
 
     function claimHack(uint256 _policyId) public {
-        require(_policyId <= insurance.getNumberOfPolicies(), "Invalid provider ID");
+        require(_policyId < insurance.getNumberOfPolicies(), "Invalid policy ID");
         require(insurance.getPolicyOwner(_policyId) == msg.sender, "Not correct caller");
 
         uint256 policyVal = insurance.getPolicyValue(_policyId);
