@@ -12,8 +12,6 @@ contract FundManager {
     IERC20 usdc;
     IInsurance insurance;
 
-    uint256 public totalLiquidityProvided;
-
     struct LiquidityProvider {
         uint256 id;
         address wallet;
@@ -22,7 +20,8 @@ contract FundManager {
     }
 
     uint256 public numberOfLiquidityProviders;
-    
+    uint256 public totalLiquidityProvided;
+
     mapping(uint256 => LiquidityProvider) public providers;
     mapping(address => uint256) public providerToId;
 
@@ -31,9 +30,9 @@ contract FundManager {
         insurance = IInsurance(_insuranceAddress);
     }   
 
-    function createNewLiquidityProvider(uint256 _liquidityValue, address _managerAddress) public {
+    function createNewLiquidityProvider(address _managerAddress) public {
         
-        addLiquidity(msg.sender, _liquidityValue, _managerAddress);
+        //addLiquidity(msg.sender, _liquidityValue, _managerAddress);
 
         providers[numberOfLiquidityProviders] = LiquidityProvider({
             id: numberOfLiquidityProviders,
@@ -46,12 +45,15 @@ contract FundManager {
         numberOfLiquidityProviders++;
     }
 
-     function addLiquidity(address _sender, uint256 _amount, address _fundManager) public {
+     function addLiquidity(uint256 _providerId, uint256 _amount, address _fundManager) public {
+
+        require(_providerId <= numberOfLiquidityProviders, "Invalid provider ID");
+        require(providerToId[msg.sender] == _providerId, "Not correct caller");
         
-        providers[providerToId[_sender]].valueOfLiquidity += _amount;
+        providers[_providerId].valueOfLiquidity += _amount;
         totalLiquidityProvided += _amount;
 
-        usdc.transferFrom(_sender, _fundManager, _amount);
+        usdc.transferFrom(msg.sender, _fundManager, _amount);
 
     }
 
@@ -73,12 +75,9 @@ contract FundManager {
         for(uint256 x = 0; x < numberOfProviders; x++){
 
             LiquidityProvider memory provider = providers[x];   
-            uint256 portion = (provider.valueOfLiquidity*100) / (totalLiquidity);
-            console.log(portion);
-            console.log(provider.valueOfLiquidity);
+            uint256 portion = (provider.valueOfLiquidity*100) / totalLiquidity;
 
             uint256 valueToSend = portion * _amount / 100;
-            console.log(valueToSend);
 
             usdc.transfer(provider.wallet, valueToSend);
 
