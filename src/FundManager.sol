@@ -83,6 +83,7 @@ contract FundManager {
         }
     } 
 
+    //Maybe have a createHack and then only owner can approve a hack
     function claimHack(uint256 _policyId) public {
         require(_policyId < insurance.getNumberOfPolicies(), "Invalid policy ID");
         require(insurance.getPolicyOwner(_policyId) == msg.sender, "Not correct caller");
@@ -91,7 +92,7 @@ contract FundManager {
 
         insurance.addHack(_policyId, policyVal, true);
 
-        usdc.transfer(msg.sender, policyVal);
+        //usdc.transfer(msg.sender, policyVal);
     }
     
 }
