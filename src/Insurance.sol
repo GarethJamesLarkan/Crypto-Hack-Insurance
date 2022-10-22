@@ -11,6 +11,9 @@ contract Insurance {
     IFundManager manager;
     IERC20 usdc;
 
+    address public owner;
+
+
     struct Policy {
         uint256 policyUniqueIdentifier;
         uint256 policyValue;
@@ -44,8 +47,11 @@ contract Insurance {
     mapping(uint256 => Hack) public hacks;
     mapping(address => uint256) public numberOfPoliciesPerUser;
 
+    event TransferredOwnership(address newOwner);
+
     constructor(address _usdcAddress) {
         usdc = IERC20(_usdcAddress);
+        owner = msg.sender;
     }
 
     function addPolicyPayment(uint256 _amount, uint256 _policyId) public {
@@ -57,7 +63,7 @@ contract Insurance {
 
     }
 
-    function createHoldingCompany(uint256 _safetyRating) public {
+    function createHoldingCompany(uint256 _safetyRating) public onlyOwner {
         require(_safetyRating <= 100, "Invalid rating");
 
         holdingCompanies[numberOfHoldingCompanies] = HoldingCompany({
@@ -85,6 +91,13 @@ contract Insurance {
         numberOfPoliciesPerUser[msg.sender] += 1;
         numberOfPolicies++;
 
+    }
+
+    function transferOwnership(address _newOwner) public onlyOwner {
+        require(_newOwner != address(0), "Cannot be zero address");
+        owner = _newOwner;
+
+        emit TransferredOwnership(_newOwner);
     }
 
     function calculatePolicyInstallments(uint256 _value, uint256 _holdingCompanyId) public returns (uint256) {
@@ -124,6 +137,15 @@ contract Insurance {
         policies[_policyId].closed = true;
 
         numberOfHacks++;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------MODIFIERS-------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+ 
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner function");
+        _;
     }
     
 }
