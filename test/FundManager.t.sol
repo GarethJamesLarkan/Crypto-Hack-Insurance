@@ -14,6 +14,7 @@ contract FundManagerTests is Test {
     Insurance insuranceInstance;
     MockUSDC token;
    
+    address zero = 0x0000000000000000000000000000000000000000;
     address owner = vm.addr(3);
     address alice = vm.addr(4);
     address bob = vm.addr(5);
@@ -45,6 +46,24 @@ contract FundManagerTests is Test {
         vm.startPrank(alice);
         vm.expectRevert("Only owner function");
         managerInstance.setFeePercentage(70);
+    }
+
+    function testOwnershipTransfers() public {
+        vm.prank(owner);
+        managerInstance.transferOwnership(alice);
+        assertEq(managerInstance.owner(), alice);
+    }
+
+    function testOwnershipTransfersFailsWhenTransferringToZeroAddress() public {
+        vm.prank(owner);
+        vm.expectRevert("Cannot be zero address");
+        managerInstance.transferOwnership(zero);
+    }
+
+    function testOwnershipTransfersFailsWhenNonOwnerCalls() public {
+        vm.prank(alice);
+        vm.expectRevert("Only owner function");
+        managerInstance.transferOwnership(alice);
     }
 
     function testAddInstallment() public {
