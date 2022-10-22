@@ -27,6 +27,16 @@ contract FundManagerTests is Test {
         managerInstance = new FundManager(address(token), address(insuranceInstance));
     }
 
+    function testSetFeePercentage() public {
+        managerInstance.setFeePercentage(20);
+        assertEq(managerInstance.feePercentage(), 20);
+    }
+
+    function testSetFeePercentageFailsWhenPercentageBiggerThan100() public {
+        vm.expectRevert("Invalid percentage");
+        managerInstance.setFeePercentage(101);
+    }
+
     function testAddInstallment() public {
 
         vm.startPrank(alice);
@@ -366,7 +376,7 @@ contract FundManagerTests is Test {
 
     }
 
-      function testClaimHackFailsWhenPolicyIsClosed() public {
+    function testClaimHackFailsWhenPolicyIsClosed() public {
         insuranceInstance.createHoldingCompany(50);
 
         //Give everyone funds
