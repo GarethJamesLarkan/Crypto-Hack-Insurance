@@ -26,6 +26,8 @@ contract FundManager {
     mapping(uint256 => LiquidityProvider) public providers;
     mapping(address => uint256) public providerToId;
 
+    event UpdatedFeePercentage(uint256 newFeePercentage);
+
     constructor(address _usdcAddress, address _insuranceAddress) {
         usdc = IERC20(_usdcAddress);
         insurance = IInsurance(_insuranceAddress);
@@ -105,6 +107,8 @@ contract FundManager {
     function setFeePercentage(uint256 _newFeePercentage) public {
         require(_newFeePercentage <= 100, "Invalid percentage");
         feePercentage = _newFeePercentage;
+
+        emit UpdatedFeePercentage(_newFeePercentage);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
