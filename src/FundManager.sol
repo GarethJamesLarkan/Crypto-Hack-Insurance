@@ -29,6 +29,7 @@ contract FundManager {
     mapping(address => uint256) public providerToId;
 
     event UpdatedFeePercentage(uint256 newFeePercentage);
+    event TransferredOwnership(address newOwner);
 
     constructor(address _usdcAddress, address _insuranceAddress) {
         usdc = IERC20(_usdcAddress);
@@ -100,6 +101,13 @@ contract FundManager {
         insurance.addHack(_policyId, policyVal, true);
 
         usdc.transfer(msg.sender, policyVal);
+    }
+
+    function transferOwnership(address _newOwner) public onlyOwner {
+        require(_newOwner != address(0), "Cannot be zero address");
+        owner = _newOwner;
+
+        emit TransferredOwnership(_newOwner);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
