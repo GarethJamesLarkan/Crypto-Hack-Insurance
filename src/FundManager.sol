@@ -20,6 +20,8 @@ contract FundManager {
 
     uint256 public numberOfLiquidityProviders;
     uint256 public totalLiquidityProvided;
+    uint256 public feePercentage;
+    uint256 public totalFees;
 
     mapping(uint256 => LiquidityProvider) public providers;
     mapping(address => uint256) public providerToId;
@@ -28,6 +30,11 @@ contract FundManager {
         usdc = IERC20(_usdcAddress);
         insurance = IInsurance(_insuranceAddress);
     }   
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------STATE MODIFYING FUNCTIONS------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+
 
     function createNewLiquidityProvider(address _managerAddress) public {
         
@@ -54,10 +61,6 @@ contract FundManager {
 
         usdc.transferFrom(msg.sender, _fundManager, _amount);
 
-    }
-
-    function getTotalLiquidity() public view returns (uint256) {
-        return totalLiquidityProvided;
     }
 
     function payPolicyInstallment(uint256 _policyId, uint256 _amount) public {
@@ -94,5 +97,22 @@ contract FundManager {
 
         usdc.transfer(msg.sender, policyVal);
     }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------SETTER FUNCTIONS----------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+
+    function setFeePercentage(uint256 _newFeePercentage) public {
+        require(_newFeePercentage <= 100, "Invalid percentage");
+        feePercentage = _newFeePercentage;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------GETTER FUNCTIONS----------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+
+    function getTotalLiquidity() public view returns (uint256) {
+        return totalLiquidityProvided;
+    } 
     
 }
