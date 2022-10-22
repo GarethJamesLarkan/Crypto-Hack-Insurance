@@ -69,11 +69,14 @@ contract FundManagerTests is Test {
     function testAddInstallment() public {
 
         vm.startPrank(alice);
-
         token.mint(alice, 300000);
         uint256 aliceBalanceBefore = token.balanceOf(alice);
+        vm.stopPrank();
 
+        vm.prank(owner);
         insuranceInstance.createHoldingCompany(50);
+
+        vm.startPrank(alice);
         insuranceInstance.createPolicy(250000, 0);    
 
         token.approve(address(managerInstance), 400000);
@@ -131,11 +134,14 @@ contract FundManagerTests is Test {
 
     function testPayInstallmentFailsWhenPolicyDoesNotExist() public {
         vm.startPrank(alice);
-
         token.mint(alice, 300000);
         uint256 aliceBalanceBefore = token.balanceOf(alice);
+        vm.stopPrank();
 
+        vm.prank(owner);
         insuranceInstance.createHoldingCompany(50);
+
+        vm.startPrank(alice);
         insuranceInstance.createPolicy(250000, 0);    
 
         token.approve(address(managerInstance), 400000);
@@ -148,6 +154,7 @@ contract FundManagerTests is Test {
 
     function testAddInstallmentWith2LiquidityProviders() public {
 
+        vm.prank(owner);
         insuranceInstance.createHoldingCompany(50);
 
         //Give everyone funds
@@ -311,6 +318,7 @@ contract FundManagerTests is Test {
 
     function testAddHack() public {
         
+        vm.prank(owner);
         insuranceInstance.createHoldingCompany(50);
 
         //Give everyone funds
@@ -349,6 +357,8 @@ contract FundManagerTests is Test {
     }
 
     function testClaimHackFailsWhenIncorrectCaller() public {
+        
+        vm.prank(owner);
         insuranceInstance.createHoldingCompany(50);
 
         //Give everyone funds
@@ -379,6 +389,8 @@ contract FundManagerTests is Test {
     }
 
     function testClaimHackFailsWhenIncorrectPolicyID() public {
+
+        vm.prank(owner);
         insuranceInstance.createHoldingCompany(50);
 
         //Give everyone funds
@@ -406,6 +418,8 @@ contract FundManagerTests is Test {
     }
 
     function testClaimHackFailsWhenPolicyIsClosed() public {
+
+        vm.prank(owner);
         insuranceInstance.createHoldingCompany(50);
 
         //Give everyone funds
