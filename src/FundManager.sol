@@ -92,7 +92,7 @@ contract FundManager {
 
         insurance.addHack(_policyId, policyVal, true);
 
-        //usdc.transfer(msg.sender, policyVal);
+        usdc.transfer(msg.sender, policyVal);
     }
     
 }

@@ -4,7 +4,7 @@ pragma solidity >=0.8.12;
 import "forge-std/Test.sol";
 import "../src/Insurance.sol";
 import "../src/FundManager.sol";
-import "../src/CHToken.sol";
+import "../src/MockUSDC.sol";
 
 import {console} from "forge-std/console.sol";
 
@@ -13,13 +13,13 @@ contract InsuranceTests is Test {
     Insurance insuranceInstance;
     FundManager managerInstance;
 
-    CHToken token;
+    MockUSDC token;
    
     address alice = vm.addr(3);
 
     function setUp() public {
         
-        token = new CHToken();
+        token = new MockUSDC();
         insuranceInstance = new Insurance(address(token));
         managerInstance = new FundManager(address(token), address(insuranceInstance));
 
