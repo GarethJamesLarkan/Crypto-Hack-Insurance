@@ -14,27 +14,37 @@ contract FundManagerTests is Test {
     Insurance insuranceInstance;
     MockUSDC token;
    
-    address alice = vm.addr(3);
-    address bob = vm.addr(4);
-    address liquidityProvider1 = vm.addr(5);
-    address liquidityProvider2 = vm.addr(6);
+    address owner = vm.addr(3);
+    address alice = vm.addr(4);
+    address bob = vm.addr(5);
+    address liquidityProvider1 = vm.addr(6);
+    address liquidityProvider2 = vm.addr(7);
 
 
     function setUp() public {
-
+        vm.startPrank(owner);
         token = new MockUSDC();
         insuranceInstance = new Insurance(address(token));
         managerInstance = new FundManager(address(token), address(insuranceInstance));
+        vm.stopPrank();
     }
 
     function testSetFeePercentage() public {
+        vm.prank(owner);
         managerInstance.setFeePercentage(20);
         assertEq(managerInstance.feePercentage(), 20);
     }
 
     function testSetFeePercentageFailsWhenPercentageBiggerThan100() public {
+        vm.startPrank(owner);
         vm.expectRevert("Invalid percentage");
         managerInstance.setFeePercentage(101);
+    }
+
+    function testSetFeePercentageFailsWhenNonOwnerCalls() public {
+        vm.startPrank(alice);
+        vm.expectRevert("Only owner function");
+        managerInstance.setFeePercentage(70);
     }
 
     function testAddInstallment() public {

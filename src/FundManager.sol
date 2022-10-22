@@ -11,6 +11,8 @@ contract FundManager {
     IERC20 usdc;
     IInsurance insurance;
 
+    address public owner;
+
     struct LiquidityProvider {
         uint256 id;
         address wallet;
@@ -31,6 +33,7 @@ contract FundManager {
     constructor(address _usdcAddress, address _insuranceAddress) {
         usdc = IERC20(_usdcAddress);
         insurance = IInsurance(_insuranceAddress);
+        owner = msg.sender;
     }   
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -72,7 +75,6 @@ contract FundManager {
         usdc.transferFrom(msg.sender, address(this), _amount);
         insurance.addPolicyPayment(_amount, _policyId);
 
-        //Transfer amount to the different wallets
         uint256 totalLiquidity = totalLiquidityProvided;
         uint256 numberOfProviders = numberOfLiquidityProviders;
 
@@ -104,7 +106,7 @@ contract FundManager {
     //--------------------------------------------------------SETTER FUNCTIONS----------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
 
-    function setFeePercentage(uint256 _newFeePercentage) public {
+    function setFeePercentage(uint256 _newFeePercentage) public onlyOwner {
         require(_newFeePercentage <= 100, "Invalid percentage");
         feePercentage = _newFeePercentage;
 
@@ -117,6 +119,15 @@ contract FundManager {
 
     function getTotalLiquidity() public view returns (uint256) {
         return totalLiquidityProvided;
-    } 
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------MODIFIERS-------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+ 
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner function");
+        _;
+    }
     
 }
