@@ -8,11 +8,14 @@ import {console} from "forge-std/console.sol";
 
 contract FundManager {
 
+    //Declare the instances of other contracts we will use
     IERC20 usdc;
     IInsurance insurance;
 
+    //Store the owner of the contract
     address public owner;
 
+    //Object to store liquidity provider information
     struct LiquidityProvider {
         uint256 id;
         address wallet;
@@ -20,17 +23,25 @@ contract FundManager {
         uint256 policyProfits;
     }
 
+    //State variables to store certain needed information
     uint256 public numberOfLiquidityProviders;
     uint256 public totalLiquidityProvided;
     uint256 public feePercentage;
     uint256 public totalFees;
 
+    //Data structures for holding needed information
     mapping(uint256 => LiquidityProvider) public providers;
     mapping(address => uint256) public providerToId;
 
+    //Events for emitting data to the front-end
     event UpdatedFeePercentage(uint256 newFeePercentage);
     event TransferredOwnership(address newOwner);
 
+    /**
+    @notice Constructor
+    @param _usdcAddress address of the USDC token
+    @param _insuranceAddress address of the Insurance.sol contract
+     */
     constructor(address _usdcAddress, address _insuranceAddress) {
         usdc = IERC20(_usdcAddress);
         insurance = IInsurance(_insuranceAddress);
@@ -114,7 +125,7 @@ contract FundManager {
     }
 
     function distributePlatformFees() public onlyOwner {
-        
+
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
