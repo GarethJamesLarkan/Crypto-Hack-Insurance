@@ -92,7 +92,7 @@ contract FundManager {
      */
     function payPolicyInstallment(uint256 _policyId, uint256 _amount) public {
 
-        require(_policyId <= insurance.getNumberOfPolicies(), "Invalid policy ID");
+        require(_policyId < insurance.getNumberOfPolicies(), "Invalid policy ID");
         require(insurance.getPolicyOwner(_policyId) == msg.sender, "Not policy owner");
 
         usdc.transferFrom(msg.sender, address(this), _amount);

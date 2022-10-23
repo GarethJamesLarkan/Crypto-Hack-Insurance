@@ -80,8 +80,69 @@ contract FundManagerTests is Test {
 
         token.approve(address(managerInstance), 400000);
 
+        vm.expectRevert("Invalid policy ID");
+        managerInstance.payPolicyInstallment(2, 2082);
+    }
+
+    function testPayInstallmentFailsWhenNonPolicyOwnerCalls() public {
+        vm.startPrank(alice);
+        token.mint(alice, 300000);
+        uint256 aliceBalanceBefore = token.balanceOf(alice);
+        vm.stopPrank();
+
+        vm.prank(owner);
+        insuranceInstance.createHoldingCompany(50);
+
+        vm.prank(alice);
+        insuranceInstance.createPolicy(250000, 0);    
+
+        vm.startPrank(bob);
+        token.approve(address(managerInstance), 400000);
+
+        vm.expectRevert("Not policy owner");
+        managerInstance.payPolicyInstallment(0, 2082);
+    }
+
+    function testPayInstallmentFailsWhenPolicyHasBeenClosed() public {
+        
+        token.mint(address(managerInstance), 50000);
+        
+        vm.startPrank(alice);
+        token.mint(alice, 300000);
+        uint256 aliceBalanceBefore = token.balanceOf(alice);
+        vm.stopPrank();
+
+        vm.prank(owner);
+        insuranceInstance.createHoldingCompany(50);
+
+        vm.startPrank(alice);
+        insuranceInstance.createPolicy(10000, 0);    
+        token.approve(address(managerInstance), 400000);
+        managerInstance.claimHack(0);
+
+        vm.expectRevert("Policy has been closed");
+        managerInstance.payPolicyInstallment(0, 82);
+    }
+
+    function testPayInstallmentFailsWhenIncorrectPaymentAmount() public {
+
+        token.mint(address(managerInstance), 50000);
+
+        vm.startPrank(alice);
+        token.mint(alice, 300000);
+        uint256 aliceBalanceBefore = token.balanceOf(alice);
+        vm.stopPrank();
+
+        vm.prank(owner);
+        insuranceInstance.createHoldingCompany(50);
+
+        vm.startPrank(alice);
+        insuranceInstance.createPolicy(10000, 0);    
+        token.approve(address(managerInstance), 400000);
+        managerInstance.claimHack(0);
+
         vm.expectRevert("Incorrect payment amount");
-        managerInstance.payPolicyInstallment(1, 2082);
+        managerInstance.payPolicyInstallment(0, 100);
     }
 
     function testPayInstallmentWith2LiquidityProvidersAndTotalFeeUpdates() public {
