@@ -68,7 +68,12 @@ contract FundManager {
         numberOfLiquidityProviders++;
     }
 
-     function addLiquidity(uint256 _providerId, uint256 _amount, address _fundManager) public {
+    /**
+    @notice Adding liquidity to the contract which will hold the USDC
+    @param _providerId Id of the user who is depositing liquidity
+    @param _amount the amount of USDC to be sent to the contract
+     */
+    function addLiquidity(uint256 _providerId, uint256 _amount) public {
 
         require(_providerId <= numberOfLiquidityProviders, "Invalid provider ID");
         require(providerToId[msg.sender] == _providerId, "Not correct caller");
@@ -76,7 +81,7 @@ contract FundManager {
         providers[_providerId].valueOfLiquidity += _amount;
         totalLiquidityProvided += _amount;
 
-        usdc.transferFrom(msg.sender, _fundManager, _amount);
+        usdc.transferFrom(msg.sender, address(this), _amount);
 
     }
 
