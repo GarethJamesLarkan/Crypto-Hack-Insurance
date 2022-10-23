@@ -80,7 +80,6 @@ contract FundManagerTests is Test {
 
         token.approve(address(managerInstance), 400000);
 
-        //First payment and checks
         vm.expectRevert("Incorrect payment amount");
         managerInstance.payPolicyInstallment(1, 2082);
     }
