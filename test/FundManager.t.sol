@@ -99,11 +99,11 @@ contract FundManagerTests is Test {
 
         //Liquidity provider 1 adding themself to the mapping
         vm.prank(liquidityProvider1);
-        managerInstance.createNewLiquidityProvider(address(managerInstance));
+        managerInstance.createNewLiquidityProvider();
 
         //Liquidity provider 2 adding themself to the mapping
         vm.prank(liquidityProvider2);
-        managerInstance.createNewLiquidityProvider(address(managerInstance));
+        managerInstance.createNewLiquidityProvider();
 
         assertEq(managerInstance.numberOfLiquidityProviders(), 2);
 
@@ -219,7 +219,7 @@ contract FundManagerTests is Test {
         token.mint(alice, 300000);
         token.approve(address(managerInstance), 300000);
 
-        managerInstance.createNewLiquidityProvider(address(managerInstance));
+        managerInstance.createNewLiquidityProvider();
         managerInstance.addLiquidity(0, 20000, address(managerInstance));
         assertEq(token.balanceOf(address(managerInstance)), 20000);
         assertEq(token.balanceOf(alice), 280000);
@@ -236,7 +236,7 @@ contract FundManagerTests is Test {
         token.mint(alice, 300000);
         token.approve(address(managerInstance), 300000);
 
-        managerInstance.createNewLiquidityProvider(address(managerInstance));
+        managerInstance.createNewLiquidityProvider();
         managerInstance.addLiquidity(0, 20000, address(managerInstance));
 
         assertEq(token.balanceOf(address(managerInstance)), 20000);
@@ -269,7 +269,7 @@ contract FundManagerTests is Test {
 
         //Liquidity provider 1 adding themself to the mapping
         vm.startPrank(liquidityProvider1);
-        managerInstance.createNewLiquidityProvider(address(managerInstance));
+        managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
         managerInstance.addLiquidity(0, 20000, address(managerInstance));
         vm.stopPrank();
@@ -309,7 +309,7 @@ contract FundManagerTests is Test {
 
         //Liquidity provider 1 adding themself to the mapping
         vm.startPrank(liquidityProvider1);
-        managerInstance.createNewLiquidityProvider(address(managerInstance));
+        managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
         managerInstance.addLiquidity(0, 20000, address(managerInstance));
         vm.stopPrank();
@@ -341,7 +341,7 @@ contract FundManagerTests is Test {
 
         //Liquidity provider 1 adding themself to the mapping
         vm.startPrank(liquidityProvider1);
-        managerInstance.createNewLiquidityProvider(address(managerInstance));
+        managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
         managerInstance.addLiquidity(0, 20000, address(managerInstance));
         vm.stopPrank();
@@ -370,7 +370,7 @@ contract FundManagerTests is Test {
 
         //Liquidity provider 1 adding themself to the mapping
         vm.startPrank(liquidityProvider1);
-        managerInstance.createNewLiquidityProvider(address(managerInstance));
+        managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
         managerInstance.addLiquidity(0, 20000, address(managerInstance));
         vm.stopPrank();

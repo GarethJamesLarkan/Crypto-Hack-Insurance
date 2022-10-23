@@ -52,8 +52,10 @@ contract FundManager {
     //---------------------------------------------------STATE MODIFYING FUNCTIONS------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
 
-
-    function createNewLiquidityProvider(address _managerAddress) public {
+    /**
+    @notice Creating a new liquidity provider object to store their information
+     */
+    function createNewLiquidityProvider() public {
         
         providers[numberOfLiquidityProviders] = LiquidityProvider({
             id: numberOfLiquidityProviders,
