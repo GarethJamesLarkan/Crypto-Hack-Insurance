@@ -83,10 +83,9 @@ contract FundManagerTests is Test {
         //First payment and checks
         vm.expectRevert("Incorrect payment amount");
         managerInstance.payPolicyInstallment(1, 2082);
-        
     }
 
-    function testPayInstallmentWith2LiquidityProviders() public {
+    function testPayInstallmentWith2LiquidityProvidersAndTotalFeeUpdates() public {
 
         vm.startPrank(owner);
         insuranceInstance.createHoldingCompany(50);
