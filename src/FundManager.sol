@@ -8,14 +8,10 @@ import {console} from "forge-std/console.sol";
 
 contract FundManager {
 
-    //Declare the instances of other contracts we will use
-    IERC20 usdc;
-    IInsurance insurance;
-
-    //Store the owner of the contract
-    address public owner;
-
-    //Object to store liquidity provider information
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------- STRUCTS ----------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+    
     struct LiquidityProvider {
         uint256 id;
         address wallet;
@@ -23,19 +19,35 @@ contract FundManager {
         uint256 policyProfits;
     }
 
-    //State variables to store certain needed information
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------ STATE VARIABLES -----------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+    
     uint256 public numberOfLiquidityProviders;
     uint256 public totalLiquidityProvided;
     uint256 public feePercentage;
     uint256 public totalFees;
+    address public owner;
+    IERC20 usdc;
+    IInsurance insurance;
 
-    //Data structures for holding needed information
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------ DATA STRUCTURES -----------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+
     mapping(uint256 => LiquidityProvider) public providers;
     mapping(address => uint256) public providerToId;
 
-    //Events for emitting data to the front-end
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------- EVENTS ---------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+
     event UpdatedFeePercentage(uint256 newFeePercentage);
     event TransferredOwnership(address newOwner);
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------- CONSTRUCTOR ------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
 
     /**
     @notice Constructor
@@ -49,7 +61,7 @@ contract FundManager {
     }   
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    //---------------------------------------------------STATE MODIFYING FUNCTIONS------------------------------------------------------
+    //-------------------------------------------------- STATE MODIFYING FUNCTIONS -----------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
 
     /**
@@ -70,6 +82,7 @@ contract FundManager {
 
     /**
     @notice Adding liquidity to the contract which will hold the USDC
+    @dev User must approve contract before calling function
     @param _providerId Id of the user who is depositing liquidity
     @param _amount the amount of USDC to be sent to the contract
      */
@@ -80,13 +93,13 @@ contract FundManager {
         
         providers[_providerId].valueOfLiquidity += _amount;
         totalLiquidityProvided += _amount;
-
         usdc.transferFrom(msg.sender, address(this), _amount);
 
     }
 
     /**
     @notice User paying one of their installments to the contract in USDC
+    @dev User must approve contract before calling function
     @param _policyId Id of the policy the user is paying an installment for
     @param _amount the amount of USDC to be sent to the contract
      */
@@ -107,29 +120,31 @@ contract FundManager {
         uint256 distritutionAmount = _amount - feeAmount;
 
         for(uint256 x = 0; x < numberOfProviders; x++){
-
             LiquidityProvider memory provider = providers[x];   
             uint256 portion = (provider.valueOfLiquidity*100) / totalLiquidity;
-
             uint256 valueToSend = portion * distritutionAmount / 100;
-
             usdc.transfer(provider.wallet, valueToSend);
-
         }
     } 
 
-    //Maybe have a createHack and then only owner can approve a hack
-    function claimHack(uint256 _policyId) public {
+    /**
+    @notice User claiming they have been hacked and the contract paying them out
+    @dev FUTURE: Wont be able to just claim, will be onlyOwner and will be a review process
+    @param _policyId Id of the policy the user is claiming
+     */    
+     function claimHack(uint256 _policyId) public {
         require(_policyId < insurance.getNumberOfPolicies(), "Invalid policy ID");
         require(insurance.getPolicyOwner(_policyId) == msg.sender, "Not correct caller");
 
         uint256 policyVal = insurance.getPolicyValue(_policyId);
-
         insurance.addHack(_policyId, policyVal, true);
-
         usdc.transfer(msg.sender, policyVal);
     }
 
+    /**
+    @notice Owner transferring ownership of contract to another address
+    @param _newOwner Address of the new owner of the contract
+     */
     function transferOwnership(address _newOwner) public onlyOwner {
         require(_newOwner != address(0), "Cannot be zero address");
         owner = _newOwner;
@@ -137,14 +152,21 @@ contract FundManager {
         emit TransferredOwnership(_newOwner);
     }
 
+    /**
+    @notice Owner can distribute the fees collected to the CH Token holders
+     */
     function distributePlatformFees() public onlyOwner {
 
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    //--------------------------------------------------------SETTER FUNCTIONS----------------------------------------------------------
+    //------------------------------------------------------- SETTER FUNCTIONS ---------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
 
+    /**
+    @notice Changing the fee percentage collected on installments
+    @param _newFeePercentage New percentage between 0 - 100 for fees
+     */
     function setFeePercentage(uint256 _newFeePercentage) public onlyOwner {
         require(_newFeePercentage <= 100, "Invalid percentage");
         feePercentage = _newFeePercentage;
@@ -153,7 +175,7 @@ contract FundManager {
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    //------------------------------------------------------------MODIFIERS-------------------------------------------------------------
+    //----------------------------------------------------------- MODIFIERS ------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
  
     modifier onlyOwner() {
