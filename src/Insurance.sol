@@ -8,11 +8,9 @@ import {console} from "forge-std/console.sol";
 
 contract Insurance {
 
-    IFundManager manager;
-    IERC20 usdc;
-
-    address public owner;
-
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------- STRUCTS -----------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
 
     struct Policy {
         uint256 policyUniqueIdentifier;
@@ -38,21 +36,45 @@ contract Insurance {
         uint256 timeOfPayout;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------ STATE VARIABLES -----------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+
     uint256 public numberOfPolicies;
     uint256 public numberOfHoldingCompanies;
     uint256 public numberOfHacks;
+    address public owner;
+    IFundManager manager;
+    IERC20 usdc;
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------ DATA STRUCTURES -----------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
 
     mapping(uint256 => Policy) public policies;
     mapping(uint256 => HoldingCompany) public holdingCompanies;
     mapping(uint256 => Hack) public hacks;
     mapping(address => uint256) public numberOfPoliciesPerUser;
 
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------- EVENTS ----------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+
     event TransferredOwnership(address newOwner);
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------- CONSTRUCTOR -------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
 
     constructor(address _usdcAddress) {
         usdc = IERC20(_usdcAddress);
         owner = msg.sender;
     }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------- STATE MODIFYING FUNCTIONS ----------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
 
     function addPolicyPayment(uint256 _amount, uint256 _policyId) public {
         require(_amount == policies[_policyId].monthlyInstallment, "Incorrect payment amount");
@@ -93,13 +115,6 @@ contract Insurance {
 
     }
 
-    function transferOwnership(address _newOwner) public onlyOwner {
-        require(_newOwner != address(0), "Cannot be zero address");
-        owner = _newOwner;
-
-        emit TransferredOwnership(_newOwner);
-    }
-
     function calculatePolicyInstallments(uint256 _value, uint256 _holdingCompanyId) public returns (uint256) {
         
         //If the user would pay the total value in 15 years of installments, what would they pay per month
@@ -108,18 +123,6 @@ contract Insurance {
         uint256 policyInstallment = expected15YearInstallment + ((expected15YearInstallment * safetyAdjustment) / 100);
 
         return policyInstallment;
-    }
-
-    function getNumberOfPolicies() public view returns (uint256) {
-        return numberOfPolicies;
-    }
-
-    function getPolicyValue(uint256 _policyId) public view returns (uint256) {
-        return policies[_policyId].policyValue;
-    }
-
-    function getPolicyOwner(uint256 _policyId) public view returns (address) {
-        return policies[_policyId].owner;
     }
 
     function addHack(uint256 _policyId, uint256 _amountPaid, bool _accepted) public {
@@ -137,6 +140,33 @@ contract Insurance {
         policies[_policyId].closed = true;
 
         numberOfHacks++;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------- SETTER FUNCTIONS -------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+
+    function transferOwnership(address _newOwner) public onlyOwner {
+        require(_newOwner != address(0), "Cannot be zero address");
+        owner = _newOwner;
+
+        emit TransferredOwnership(_newOwner);
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------- GETTERS -----------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
+
+    function getNumberOfPolicies() public view returns (uint256) {
+        return numberOfPolicies;
+    }
+
+    function getPolicyValue(uint256 _policyId) public view returns (uint256) {
+        return policies[_policyId].policyValue;
+    }
+
+    function getPolicyOwner(uint256 _policyId) public view returns (address) {
+        return policies[_policyId].owner;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
