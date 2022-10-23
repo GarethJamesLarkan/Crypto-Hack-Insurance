@@ -85,9 +85,15 @@ contract FundManager {
 
     }
 
+    /**
+    @notice User paying one of their installments to the contract in USDC
+    @param _policyId Id of the policy the user is paying an installment for
+    @param _amount the amount of USDC to be sent to the contract
+     */
     function payPolicyInstallment(uint256 _policyId, uint256 _amount) public {
 
         require(_policyId <= insurance.getNumberOfPolicies(), "Invalid policy ID");
+        require(insurance.getPolicyOwner(_policyId) == msg.sender, "Not policy owner");
 
         usdc.transferFrom(msg.sender, address(this), _amount);
         insurance.addPolicyPayment(_amount, _policyId);
