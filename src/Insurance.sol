@@ -7,7 +7,6 @@ import "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {console} from "forge-std/console.sol";
 
 contract Insurance {
-
     //----------------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------- STRUCTS -----------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -56,7 +55,6 @@ contract Insurance {
     mapping(uint256 => Hack) public hacks;
     mapping(address => uint256) public numberOfPoliciesPerUser;
 
-
     //----------------------------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------------- EVENTS ----------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -86,12 +84,14 @@ contract Insurance {
     @param _policyId The id of the policy the installment was paid for.
      */
     function addPolicyPayment(uint256 _amount, uint256 _policyId) public {
-        require(_amount == policies[_policyId].monthlyInstallment, "Incorrect payment amount");
+        require(
+            _amount == policies[_policyId].monthlyInstallment,
+            "Incorrect payment amount"
+        );
         require(policies[_policyId].closed == false, "Policy has been closed");
 
         policies[_policyId].numberOfInstallments++;
         policies[_policyId].valueOfInstallments += _amount;
-
     }
 
     /**
@@ -115,9 +115,15 @@ contract Insurance {
     @param _cryptoValueToBeInsured The amount of crypto in USDC to be insured.
     @param _holdingCompanyId The ID of the company the crypto is being stored in.
      */
-    function createPolicy(uint256 _cryptoValueToBeInsured, uint256 _holdingCompanyId) public {
-        uint256 installment = calculatePolicyInstallments(_cryptoValueToBeInsured, _holdingCompanyId);
-        
+    function createPolicy(
+        uint256 _cryptoValueToBeInsured,
+        uint256 _holdingCompanyId
+    ) public {
+        uint256 installment = calculatePolicyInstallments(
+            _cryptoValueToBeInsured,
+            _holdingCompanyId
+        );
+
         policies[numberOfPolicies] = Policy({
             policyUniqueIdentifier: numberOfPolicies,
             policyValue: _cryptoValueToBeInsured,
@@ -138,11 +144,15 @@ contract Insurance {
     @param _value The amount of crypto the polciy is insuring.
     @param _holdingCompanyId The ID of the company the crypto is being stored in.
      */
-    function calculatePolicyInstallments(uint256 _value, uint256 _holdingCompanyId) public returns (uint256) {
-        
+    function calculatePolicyInstallments(
+        uint256 _value,
+        uint256 _holdingCompanyId
+    ) public returns (uint256) {
         uint256 expected15YearInstallment = _value / 180;
-        uint256 safetyAdjustment = 100 - holdingCompanies[_holdingCompanyId].safetyRating;
-        uint256 policyInstallment = expected15YearInstallment + ((expected15YearInstallment * safetyAdjustment) / 100);
+        uint256 safetyAdjustment = 100 -
+            holdingCompanies[_holdingCompanyId].safetyRating;
+        uint256 policyInstallment = expected15YearInstallment +
+            ((expected15YearInstallment * safetyAdjustment) / 100);
 
         return policyInstallment;
     }
@@ -153,8 +163,11 @@ contract Insurance {
     @param _amountPaid The value of the payout for the hack.
     @param _accepted If the hack was accepted or not, if rejected, value paid out will be 0.
      */
-    function addHack(uint256 _policyId, uint256 _amountPaid, bool _accepted) public {
-
+    function addHack(
+        uint256 _policyId,
+        uint256 _amountPaid,
+        bool _accepted
+    ) public {
         require(policies[_policyId].closed == false, "Policy has been closed");
 
         hacks[numberOfHacks] = Hack({
@@ -217,7 +230,7 @@ contract Insurance {
     //----------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------MODIFIERS-------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
- 
+
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner function");
         _;

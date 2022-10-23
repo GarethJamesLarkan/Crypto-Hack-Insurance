@@ -7,11 +7,10 @@ import "./Interfaces/IInsurance.sol";
 import {console} from "forge-std/console.sol";
 
 contract FundManager {
-
     //----------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------- STRUCTS ----------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
-    
+
     struct LiquidityProvider {
         uint256 id;
         address wallet;
@@ -22,7 +21,7 @@ contract FundManager {
     //----------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------ STATE VARIABLES -----------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
-    
+
     uint256 public numberOfLiquidityProviders;
     uint256 public totalLiquidityProvided;
     uint256 public feePercentage;
@@ -58,7 +57,7 @@ contract FundManager {
         usdc = IERC20(_usdcAddress);
         insurance = IInsurance(_insuranceAddress);
         owner = msg.sender;
-    }   
+    }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------- STATE MODIFYING FUNCTIONS -----------------------------------------------------
@@ -68,7 +67,6 @@ contract FundManager {
     @notice Creating a new liquidity provider object to store their information.
      */
     function createNewLiquidityProvider() public {
-        
         providers[numberOfLiquidityProviders] = LiquidityProvider({
             id: numberOfLiquidityProviders,
             wallet: msg.sender,
@@ -87,14 +85,15 @@ contract FundManager {
     @param _amount The amount of USDC to be sent to the contract.
      */
     function addLiquidity(uint256 _providerId, uint256 _amount) public {
-
-        require(_providerId <= numberOfLiquidityProviders, "Invalid provider ID");
+        require(
+            _providerId <= numberOfLiquidityProviders,
+            "Invalid provider ID"
+        );
         require(providerToId[msg.sender] == _providerId, "Not correct caller");
-        
+
         providers[_providerId].valueOfLiquidity += _amount;
         totalLiquidityProvided += _amount;
         usdc.transferFrom(msg.sender, address(this), _amount);
-
     }
 
     /**
@@ -104,37 +103,49 @@ contract FundManager {
     @param _amount The amount of USDC to be sent to the contract.
      */
     function payPolicyInstallment(uint256 _policyId, uint256 _amount) public {
-
-        require(_policyId < insurance.getNumberOfPolicies(), "Invalid policy ID");
-        require(insurance.getPolicyOwner(_policyId) == msg.sender, "Not policy owner");
+        require(
+            _policyId < insurance.getNumberOfPolicies(),
+            "Invalid policy ID"
+        );
+        require(
+            insurance.getPolicyOwner(_policyId) == msg.sender,
+            "Not policy owner"
+        );
 
         usdc.transferFrom(msg.sender, address(this), _amount);
         insurance.addPolicyPayment(_amount, _policyId);
 
         uint256 totalLiquidity = totalLiquidityProvided;
         uint256 numberOfProviders = numberOfLiquidityProviders;
-        uint256 feeAmount = _amount * feePercentage / 100;
-        
+        uint256 feeAmount = (_amount * feePercentage) / 100;
+
         totalFees += feeAmount;
 
         uint256 distritutionAmount = _amount - feeAmount;
 
-        for(uint256 x = 0; x < numberOfProviders; x++){
-            LiquidityProvider memory provider = providers[x];   
-            uint256 portion = (provider.valueOfLiquidity*100) / totalLiquidity;
-            uint256 valueToSend = portion * distritutionAmount / 100;
+        for (uint256 x = 0; x < numberOfProviders; x++) {
+            LiquidityProvider memory provider = providers[x];
+            uint256 portion = (provider.valueOfLiquidity * 100) /
+                totalLiquidity;
+            uint256 valueToSend = (portion * distritutionAmount) / 100;
             usdc.transfer(provider.wallet, valueToSend);
         }
-    } 
+    }
 
     /**
     @notice User claiming they have been hacked and the contract paying them out.
     @dev FUTURE: Wont be able to just claim, will be onlyOwner and will be a review process.
     @param _policyId ID of the policy the user is claiming.
-     */    
-     function claimHack(uint256 _policyId) public {
-        require(_policyId < insurance.getNumberOfPolicies(), "Invalid policy ID");
-        require(insurance.getPolicyOwner(_policyId) == msg.sender, "Not correct caller");
+     */
+    function claimHack(uint256 _policyId) public {
+        require(
+            _policyId < insurance.getNumberOfPolicies(),
+            "Invalid policy ID"
+        );
+        require(
+            insurance.getPolicyOwner(_policyId) == msg.sender,
+            "Not correct caller"
+        );
 
         uint256 policyVal = insurance.getPolicyValue(_policyId);
         insurance.addHack(_policyId, policyVal, true);
@@ -155,9 +166,7 @@ contract FundManager {
     /**
     @notice Owner can distribute the fees collected to the CH Token holders.
      */
-    function distributePlatformFees() public onlyOwner {
-
-    }
+    function distributePlatformFees() public onlyOwner {}
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------- SETTER FUNCTIONS ---------------------------------------------------------
@@ -177,10 +186,9 @@ contract FundManager {
     //----------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------- MODIFIERS ------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
- 
+
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner function");
         _;
     }
-    
 }
