@@ -113,8 +113,8 @@ contract FundManager {
 
         uint256 totalLiquidity = totalLiquidityProvided;
         uint256 numberOfProviders = numberOfLiquidityProviders;
-
         uint256 feeAmount = _amount * feePercentage / 100;
+        
         totalFees += feeAmount;
 
         uint256 distritutionAmount = _amount - feeAmount;
