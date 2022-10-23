@@ -9,12 +9,11 @@ import "../src/MockUSDC.sol";
 import {console} from "forge-std/console.sol";
 
 contract InsuranceTests is Test {
-
     Insurance insuranceInstance;
     FundManager managerInstance;
 
     MockUSDC token;
-   
+
     address zero = 0x0000000000000000000000000000000000000000;
     address owner = vm.addr(3);
     address alice = vm.addr(4);
@@ -23,28 +22,31 @@ contract InsuranceTests is Test {
     address liquidityProvider2 = vm.addr(7);
 
     function setUp() public {
-        
         vm.startPrank(owner);
         token = new MockUSDC();
         insuranceInstance = new Insurance(address(token));
-        managerInstance = new FundManager(address(token), address(insuranceInstance));
+        managerInstance = new FundManager(
+            address(token),
+            address(insuranceInstance)
+        );
         vm.stopPrank();
     }
 
     function testCreateHoldingCompany() public {
-        
         vm.startPrank(owner);
         insuranceInstance.createHoldingCompany(50);
         assertEq(insuranceInstance.numberOfHoldingCompanies(), 1);
 
-        (uint256 id, uint256 safetyRating) = insuranceInstance.holdingCompanies(0); 
+        (uint256 id, uint256 safetyRating) = insuranceInstance.holdingCompanies(
+            0
+        );
         assertEq(id, 0);
         assertEq(safetyRating, 50);
 
         insuranceInstance.createHoldingCompany(80);
         assertEq(insuranceInstance.numberOfHoldingCompanies(), 2);
 
-        (id, safetyRating) = insuranceInstance.holdingCompanies(1); 
+        (id, safetyRating) = insuranceInstance.holdingCompanies(1);
         assertEq(id, 1);
         assertEq(safetyRating, 80);
         vm.stopPrank();
@@ -63,16 +65,23 @@ contract InsuranceTests is Test {
     }
 
     function testCreatePolicy() public {
-
-        
         vm.prank(owner);
         insuranceInstance.createHoldingCompany(50);
 
         vm.startPrank(alice);
         insuranceInstance.createPolicy(250000, 0);
 
-        (uint256 id, uint256 value, uint256 installment, uint256 numOfInstallments, uint256 valueOfInstallments, uint256 holdingcompany,,address owner) = insuranceInstance.policies(0); 
-        
+        (
+            uint256 id,
+            uint256 value,
+            uint256 installment,
+            uint256 numOfInstallments,
+            uint256 valueOfInstallments,
+            uint256 holdingcompany,
+            ,
+            address owner
+        ) = insuranceInstance.policies(0);
+
         assertEq(insuranceInstance.numberOfPolicies(), 1);
         assertEq(value, 250000);
         assertEq(installment, 2082);
@@ -80,6 +89,5 @@ contract InsuranceTests is Test {
         assertEq(numOfInstallments, 0);
         assertEq(holdingcompany, 0);
         assertEq(owner, address(alice));
-
     }
 }
