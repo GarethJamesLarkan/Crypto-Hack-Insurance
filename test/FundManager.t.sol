@@ -122,7 +122,7 @@ contract FundManagerTests is Test {
 
         vm.startPrank(liquidityProvider1);
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000, address(managerInstance));
+        managerInstance.addLiquidity(0, 20000);
 
         assertEq(token.balanceOf(liquidityProvider1), 280000);
         assertEq(token.balanceOf(address(managerInstance)), 20000);
@@ -130,7 +130,7 @@ contract FundManagerTests is Test {
 
         vm.startPrank(liquidityProvider2);
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(1, 20000, address(managerInstance));
+        managerInstance.addLiquidity(1, 20000);
 
         assertEq(token.balanceOf(liquidityProvider2), 280000);
         assertEq(token.balanceOf(address(managerInstance)), 40000);
@@ -220,7 +220,7 @@ contract FundManagerTests is Test {
         token.approve(address(managerInstance), 300000);
 
         managerInstance.createNewLiquidityProvider();
-        managerInstance.addLiquidity(0, 20000, address(managerInstance));
+        managerInstance.addLiquidity(0, 20000);
         assertEq(token.balanceOf(address(managerInstance)), 20000);
         assertEq(token.balanceOf(alice), 280000);
 
@@ -237,7 +237,7 @@ contract FundManagerTests is Test {
         token.approve(address(managerInstance), 300000);
 
         managerInstance.createNewLiquidityProvider();
-        managerInstance.addLiquidity(0, 20000, address(managerInstance));
+        managerInstance.addLiquidity(0, 20000);
 
         assertEq(token.balanceOf(address(managerInstance)), 20000);
         assertEq(token.balanceOf(alice), 280000);
@@ -246,7 +246,7 @@ contract FundManagerTests is Test {
 
         assertEq(valueOfLiquidity, 20000);
 
-        managerInstance.addLiquidity(0, 50000, address(managerInstance));
+        managerInstance.addLiquidity(0, 50000);
 
         assertEq(token.balanceOf(address(managerInstance)), 70000);
         assertEq(token.balanceOf(alice), 230000);
@@ -271,7 +271,7 @@ contract FundManagerTests is Test {
         vm.startPrank(liquidityProvider1);
         managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000, address(managerInstance));
+        managerInstance.addLiquidity(0, 20000);
         vm.stopPrank();
 
         //Alice creating a policy
@@ -311,7 +311,7 @@ contract FundManagerTests is Test {
         vm.startPrank(liquidityProvider1);
         managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000, address(managerInstance));
+        managerInstance.addLiquidity(0, 20000);
         vm.stopPrank();
 
         //Alice creating a policy
@@ -343,7 +343,7 @@ contract FundManagerTests is Test {
         vm.startPrank(liquidityProvider1);
         managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000, address(managerInstance));
+        managerInstance.addLiquidity(0, 20000);
         vm.stopPrank();
 
         //Alice creating a policy
@@ -372,7 +372,7 @@ contract FundManagerTests is Test {
         vm.startPrank(liquidityProvider1);
         managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000, address(managerInstance));
+        managerInstance.addLiquidity(0, 20000);
         vm.stopPrank();
 
         //Alice creating a policy
