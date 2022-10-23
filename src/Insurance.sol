@@ -96,7 +96,7 @@ contract Insurance {
 
     /**
     @notice Creating a holding company (company a user can have funds invested in) object to hold information regarding companies.
-    @param _safetyRatingnt The safety rating of the company out of 100.
+    @param _safetyRating The safety rating of the company out of 100.
     @dev The sefty rating helps calculate the installment value for a policy.
      */
     function createHoldingCompany(uint256 _safetyRating) public onlyOwner {

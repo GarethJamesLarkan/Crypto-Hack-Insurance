@@ -3,6 +3,7 @@ pragma solidity =0.8.13;
 
 import "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "./Interfaces/IInsurance.sol";
+import "./CHToken.sol";
 
 import {console} from "forge-std/console.sol";
 
@@ -28,6 +29,7 @@ contract FundManager {
     uint256 public totalFees;
     address public owner;
     IERC20 usdc;
+    CHToken token;
     IInsurance insurance;
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -52,9 +54,11 @@ contract FundManager {
     @notice Constructor
     @param _usdcAddress Address of the USDC token.
     @param _insuranceAddress Address of the Insurance.sol contract.
+    @param _chTokenAddress Address of the Crypto Hack Token.
      */
-    constructor(address _usdcAddress, address _insuranceAddress) {
+    constructor(address _usdcAddress, address _insuranceAddress, address _chTokenAddress) {
         usdc = IERC20(_usdcAddress);
+        token = CHToken(_chTokenAddress);
         insurance = IInsurance(_insuranceAddress);
         owner = msg.sender;
     }
@@ -166,7 +170,13 @@ contract FundManager {
     /**
     @notice Owner can distribute the fees collected to the CH Token holders.
      */
-    function distributePlatformFees() public onlyOwner {}
+    function distributePlatformFees() public onlyOwner {
+        uint256 totalCHTokenSupply = token.totalSupply();
+
+        for(uint256 x = 0; x < token.numberOfHolders(); x++){
+
+        }
+    }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------- SETTER FUNCTIONS ---------------------------------------------------------

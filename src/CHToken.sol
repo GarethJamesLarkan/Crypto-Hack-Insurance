@@ -2,11 +2,11 @@
 pragma solidity =0.8.13;
 
 import "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
-import "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 contract CHToken is ERC20 {
     uint256 public maxSupply = 5000000;
     uint256 public maxPerWallet = 100000;
+    uint256 public numberOfHolders;
     IERC20 usdc;
 
     /**
@@ -24,11 +24,15 @@ contract CHToken is ERC20 {
     @param amount The amount of tokens to mint at a $1 price.
      */
     function mint(address to, uint256 amount) public {
-        require(_totalSupply() + amount <= maxSupply, "Max supply reached");
+        require(totalSupply() + amount <= maxSupply, "Max supply reached");
         require(
-            _balances(to) + amount <= maxPerWallet,
+            balanceOf(to) + amount <= maxPerWallet,
             "Max per wallet reached"
         );
+
+        if (balanceOf(to) == 0) {
+            numberOfHolders++;
+        }
 
         usdc.transferFrom(msg.sender, address(this), amount);
         _mint(to, amount);

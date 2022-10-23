@@ -5,6 +5,7 @@ import "forge-std/Test.sol";
 import "../src/Insurance.sol";
 import "../src/FundManager.sol";
 import "../src/MockUSDC.sol";
+import "../src/CHToken.sol";
 
 import {console} from "forge-std/console.sol";
 
@@ -12,6 +13,7 @@ contract FundManagerTests is Test {
     FundManager managerInstance;
     Insurance insuranceInstance;
     MockUSDC token;
+    CHToken chToken;
 
     address zero = 0x0000000000000000000000000000000000000000;
     address owner = vm.addr(3);
@@ -23,10 +25,12 @@ contract FundManagerTests is Test {
     function setUp() public {
         vm.startPrank(owner);
         token = new MockUSDC();
+        chToken = new CHToken(address(token));
         insuranceInstance = new Insurance(address(token));
         managerInstance = new FundManager(
             address(token),
-            address(insuranceInstance)
+            address(insuranceInstance),
+            address(chToken)
         );
         vm.stopPrank();
     }
