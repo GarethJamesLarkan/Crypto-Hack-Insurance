@@ -51,8 +51,8 @@ contract FundManager {
 
     /**
     @notice Constructor
-    @param _usdcAddress address of the USDC token
-    @param _insuranceAddress address of the Insurance.sol contract
+    @param _usdcAddress Address of the USDC token.
+    @param _insuranceAddress Address of the Insurance.sol contract.
      */
     constructor(address _usdcAddress, address _insuranceAddress) {
         usdc = IERC20(_usdcAddress);
@@ -65,7 +65,7 @@ contract FundManager {
     //----------------------------------------------------------------------------------------------------------------------------------
 
     /**
-    @notice Creating a new liquidity provider object to store their information
+    @notice Creating a new liquidity provider object to store their information.
      */
     function createNewLiquidityProvider() public {
         
@@ -81,10 +81,10 @@ contract FundManager {
     }
 
     /**
-    @notice Adding liquidity to the contract which will hold the USDC
-    @dev User must approve contract before calling function
-    @param _providerId Id of the user who is depositing liquidity
-    @param _amount the amount of USDC to be sent to the contract
+    @notice Adding liquidity to the contract which will hold the USDC.
+    @dev User must approve contract before calling function.
+    @param _providerId ID of the user who is depositing liquidity.
+    @param _amount The amount of USDC to be sent to the contract.
      */
     function addLiquidity(uint256 _providerId, uint256 _amount) public {
 
@@ -98,10 +98,10 @@ contract FundManager {
     }
 
     /**
-    @notice User paying one of their installments to the contract in USDC
-    @dev User must approve contract before calling function
-    @param _policyId Id of the policy the user is paying an installment for
-    @param _amount the amount of USDC to be sent to the contract
+    @notice User paying one of their installments to the contract in USDC.
+    @dev User must approve contract before calling function.
+    @param _policyId ID of the policy the user is paying an installment for.
+    @param _amount The amount of USDC to be sent to the contract.
      */
     function payPolicyInstallment(uint256 _policyId, uint256 _amount) public {
 
@@ -128,9 +128,9 @@ contract FundManager {
     } 
 
     /**
-    @notice User claiming they have been hacked and the contract paying them out
-    @dev FUTURE: Wont be able to just claim, will be onlyOwner and will be a review process
-    @param _policyId Id of the policy the user is claiming
+    @notice User claiming they have been hacked and the contract paying them out.
+    @dev FUTURE: Wont be able to just claim, will be onlyOwner and will be a review process.
+    @param _policyId ID of the policy the user is claiming.
      */    
      function claimHack(uint256 _policyId) public {
         require(_policyId < insurance.getNumberOfPolicies(), "Invalid policy ID");
@@ -142,8 +142,8 @@ contract FundManager {
     }
 
     /**
-    @notice Owner transferring ownership of contract to another address
-    @param _newOwner Address of the new owner of the contract
+    @notice Owner transferring ownership of contract to another address.
+    @param _newOwner Address of the new owner of the contract.
      */
     function transferOwnership(address _newOwner) public onlyOwner {
         require(_newOwner != address(0), "Cannot be zero address");
@@ -153,7 +153,7 @@ contract FundManager {
     }
 
     /**
-    @notice Owner can distribute the fees collected to the CH Token holders
+    @notice Owner can distribute the fees collected to the CH Token holders.
      */
     function distributePlatformFees() public onlyOwner {
 
@@ -164,8 +164,8 @@ contract FundManager {
     //----------------------------------------------------------------------------------------------------------------------------------
 
     /**
-    @notice Changing the fee percentage collected on installments
-    @param _newFeePercentage New percentage between 0 - 100 for fees
+    @notice Changing the fee percentage collected on installments.
+    @param _newFeePercentage New percentage between 0 - 100 for fees.
      */
     function setFeePercentage(uint256 _newFeePercentage) public onlyOwner {
         require(_newFeePercentage <= 100, "Invalid percentage");
