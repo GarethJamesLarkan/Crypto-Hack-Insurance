@@ -9,11 +9,20 @@ contract CHToken is ERC20 {
     uint256 public maxPerWallet = 100000;
     IERC20 usdc;
 
+    /**
+    @notice Constructor
+    @param _usdcAddress Address of the USDC token.
+     */
     constructor(address _usdcAddress) ERC20("Crypto Hack Token", "CHT") {
         mint(msg.sender, 1000);
         usdc = IERC20(_usdcAddress);
     }
 
+    /**
+    @notice Mints CHTokens to sender
+    @param to Address of the user recieving the tokens.
+    @param amount The amount of tokens to mint at a $1 price.
+     */
     function mint(address to, uint256 amount) public {
         require(_totalSupply() + amount <= maxSupply, "Max supply reached");
         require(
