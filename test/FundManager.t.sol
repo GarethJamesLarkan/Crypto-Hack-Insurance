@@ -66,72 +66,6 @@ contract FundManagerTests is Test {
         managerInstance.transferOwnership(alice);
     }
 
-    function testAddInstallment() public {
-
-        vm.startPrank(alice);
-        token.mint(alice, 300000);
-        uint256 aliceBalanceBefore = token.balanceOf(alice);
-        vm.stopPrank();
-
-        vm.prank(owner);
-        insuranceInstance.createHoldingCompany(50);
-
-        vm.startPrank(alice);
-        insuranceInstance.createPolicy(250000, 0);    
-
-        token.approve(address(managerInstance), 400000);
-
-        managerInstance.createNewLiquidityProvider(address(managerInstance));
-        
-        assertEq(token.balanceOf(alice), aliceBalanceBefore);
-
-        managerInstance.addLiquidity(0, 20000, address(managerInstance));
-        assertEq(token.balanceOf(alice), aliceBalanceBefore - 20000);
-
-        //First payment and checks
-        managerInstance.payPolicyInstallment(0, 2082);
-        assertEq(token.balanceOf(address(managerInstance)), 20000);
-        assertEq(token.balanceOf(alice), aliceBalanceBefore - 20000);
-
-        (uint256 id, uint256 value, uint256 installment, uint256 numOfInstallments, uint256 valueOfInstallments, uint256 holdingcompany,, address owner) = insuranceInstance.policies(0); 
-
-        assertEq(value, 250000);
-        assertEq(installment, 2082);
-        assertEq(numOfInstallments, 1);
-        assertEq(valueOfInstallments, 2082);
-        assertEq(holdingcompany, 0);
-        assertEq(owner, address(alice));
-
-        //Second payment and checks
-        managerInstance.payPolicyInstallment(0, 2082);
-
-        assertEq(token.balanceOf(address(managerInstance)), 20000);
-        assertEq(token.balanceOf(alice), aliceBalanceBefore - 20000);
-
-        (, uint256 value2, uint256 installment2, uint256 numOfInstallments2, uint256 valueOfInstallments2, uint256 holdingcompany2,, address owner2) = insuranceInstance.policies(0); 
-
-        assertEq(value2, 250000);
-        assertEq(installment2, 2082);
-        assertEq(numOfInstallments2, 2);
-        assertEq(valueOfInstallments2, 4164);
-        assertEq(holdingcompany2, 0);
-        assertEq(owner2, address(alice));
-
-        vm.stopPrank();
-        vm.startPrank(bob);
-
-        token.mint(bob, 300000);
-        token.approve(address(managerInstance), 400000);
-
-        insuranceInstance.createPolicy(250000, 0);  
-        managerInstance.payPolicyInstallment(0, 2082);
-
-        assertEq(token.balanceOf(address(managerInstance)), 20000);
-        assertEq(token.balanceOf(alice), 282082);
-        assertEq(token.balanceOf(bob), 300000-2082);
-
-    }
-
     function testPayInstallmentFailsWhenPolicyDoesNotExist() public {
         vm.startPrank(alice);
         token.mint(alice, 300000);
@@ -152,10 +86,12 @@ contract FundManagerTests is Test {
         
     }
 
-    function testAddInstallmentWith2LiquidityProviders() public {
+    function testPayInstallmentWith2LiquidityProviders() public {
 
-        vm.prank(owner);
+        vm.startPrank(owner);
         insuranceInstance.createHoldingCompany(50);
+        managerInstance.setFeePercentage(20);
+        vm.stopPrank();
 
         //Give everyone funds
         token.mint(alice, 300000);
@@ -244,10 +180,13 @@ contract FundManagerTests is Test {
         vm.startPrank(alice);
         managerInstance.payPolicyInstallment(0, 2082);
 
-        assertEq(token.balanceOf(liquidityProvider1), 281041);
-        assertEq(token.balanceOf(liquidityProvider2), 281041);
+        assertEq(token.balanceOf(liquidityProvider1), 280833);
+        assertEq(token.balanceOf(liquidityProvider2), 280833);
         assertEq(token.balanceOf(alice), 297918);
         assertEq(token.balanceOf(bob), 300000);
+        assertEq(token.balanceOf(address(managerInstance)), 40416);
+
+        assertEq(managerInstance.totalFees(), 416);
 
         (uint256 aliceId2, uint256 aliceValue2, uint256 aliceInstallment2, uint256 aliceNumOfInstallments2, uint256 aliceValueOfInstallments2,,,) = insuranceInstance.policies(0); 
         assertEq(aliceId2, 0);
@@ -260,10 +199,13 @@ contract FundManagerTests is Test {
         vm.startPrank(bob);
         managerInstance.payPolicyInstallment(1, 2082);
 
-        assertEq(token.balanceOf(liquidityProvider1), 282082);
-        assertEq(token.balanceOf(liquidityProvider2), 282082);
+        assertEq(token.balanceOf(liquidityProvider1), 281666);
+        assertEq(token.balanceOf(liquidityProvider2), 281666);
         assertEq(token.balanceOf(alice), 297918);
         assertEq(token.balanceOf(bob), 297918);
+        assertEq(token.balanceOf(address(managerInstance)), 40832);
+
+        assertEq(managerInstance.totalFees(), 832);
 
         (, uint256 bobValue2, uint256 bobInstallment2, uint256 bobNumOfInstallments2, uint256 bobValueOfInstallments2,,,) = insuranceInstance.policies(1); 
         assertEq(bobValue2, 250000);

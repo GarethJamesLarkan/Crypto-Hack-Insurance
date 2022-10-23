@@ -44,8 +44,6 @@ contract FundManager {
 
     function createNewLiquidityProvider(address _managerAddress) public {
         
-        //addLiquidity(msg.sender, _liquidityValue, _managerAddress);
-
         providers[numberOfLiquidityProviders] = LiquidityProvider({
             id: numberOfLiquidityProviders,
             wallet: msg.sender,
@@ -79,12 +77,17 @@ contract FundManager {
         uint256 totalLiquidity = totalLiquidityProvided;
         uint256 numberOfProviders = numberOfLiquidityProviders;
 
+        uint256 feeAmount = _amount * feePercentage / 100;
+        totalFees += feeAmount;
+
+        uint256 distritutionAmount = _amount - feeAmount;
+
         for(uint256 x = 0; x < numberOfProviders; x++){
 
             LiquidityProvider memory provider = providers[x];   
             uint256 portion = (provider.valueOfLiquidity*100) / totalLiquidity;
 
-            uint256 valueToSend = portion * _amount / 100;
+            uint256 valueToSend = portion * distritutionAmount / 100;
 
             usdc.transfer(provider.wallet, valueToSend);
 
