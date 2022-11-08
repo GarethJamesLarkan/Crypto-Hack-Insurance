@@ -46,6 +46,7 @@ contract FundManager {
     event UpdatedFeePercentage(uint256 newFeePercentage);
     event TransferredOwnership(address newOwner);
     event ClaimPaid(address reciever, uint256 amountPaid);
+    event ApproveHack(uint256 hackId, uint256 value);
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------- CONSTRUCTOR ------------------------------------------------------------
@@ -159,7 +160,7 @@ contract FundManager {
 
         usdc.transfer(policyOwner, valueOfPolicy);
 
-        //emit ApproveHack(_hackId, valueOfPolicy);
+        emit ApproveHack(_hackId, valueOfPolicy);
     }
 
 
@@ -191,7 +192,6 @@ contract FundManager {
      */
     function distributeHackFunds(address _to, uint256 _amount) external {
         require(msg.sender == address(insurance), "Incorrect caller");
-        console.log(1);
         usdc.transfer(_to, _amount);
 
         emit ClaimPaid(_to, _amount);
