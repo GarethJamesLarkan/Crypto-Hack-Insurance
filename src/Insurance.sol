@@ -227,16 +227,18 @@ contract Insurance {
     @param _hackId Policy the hack is being approved for
      */
     function rejectHack(uint256 _hackId) external onlyOwner {
-        uint256 policyId = hacks[_hackId].policyId;
+        
+        Hack storage tempHack = hacks[_hackId];
+        uint256 policyId = tempHack.policyId;
 
         require(
             policyId < insurance.getNumberOfPolicies(),
             "Invalid policy ID"
         );
 
-        hacks[_hackId].accepted = false;
-        hacks[_hackId].timeOfPayout = 0;
-        hacks[_hackId].amountPaidOut = 0;
+        tempHack.accepted = false;
+        tempHack.timeOfPayout = 0;
+        tempHack.amountPaidOut = 0;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
