@@ -222,6 +222,11 @@ contract Insurance is IInsurance {
         emit TransferredOwnership(_newOwner);
     }
 
+    /**
+    @notice Owner transferring ownership of contract to another address.
+    @param _hackId The id of the hack being updated.
+    @param _valueOfPolicy The value of the payout.
+     */
     function updateHackAfterApproval(uint256 _hackId, uint256 _valueOfPolicy) external {
         hacks[_hackId].accepted = true;
         hacks[_hackId].timeOfPayout = block.timestamp;
