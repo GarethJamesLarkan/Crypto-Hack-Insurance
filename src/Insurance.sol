@@ -212,6 +212,8 @@ contract Insurance {
         hacks[_policyId].accepted = true;
         hacks[_policyId].timeOfPayout = block.timestamp;
         hacks[_policyId].amountPaidOut = valueOfPolicy;
+
+        manager.distributeHackFunds(policies[_policyId].owner, valueOfPolicy);
     }
 
     function rejectHack(uint256 _policyId) external onlyOwner {
