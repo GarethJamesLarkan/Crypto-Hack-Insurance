@@ -179,13 +179,9 @@ contract Insurance {
     /**
     @notice Adding information about a hack to the relevant data structure.
     @param _policyId The ID of the policy the hack refers to.
-    @param _amountPaid The value of the payout for the hack.
-    @param _accepted If the hack was accepted or not, if rejected, value paid out will be 0.
      */
     function addHack(
-        uint256 _policyId,
-        uint256 _amountPaid,
-        bool _accepted
+        uint256 _policyId
     ) public {
         require(policies[_policyId].closed == false, "Policy has been closed");
 
@@ -193,7 +189,7 @@ contract Insurance {
             hackId: numberOfHacks,
             policyId: _policyId,
             amountPaidOut: 0,
-            accepted: _accepted,
+            accepted: false,
             timeOfPayout: 0
         });
 
@@ -201,30 +197,44 @@ contract Insurance {
         numberOfHacks++;
     }
 
-    function approveHack(uint256 _policyId) external onlyOwner {
+    /**
+    @notice Approving a hack, only done by owner
+    @param _hackId Policy the hack is being approved for
+     */
+    function approveHack(uint256 _hackId) external onlyOwner {
+        uint256 policyId = hacks[_hackId].policyId;
+        
         require(
-            _policyId < insurance.getNumberOfPolicies(),
+            policyId < insurance.getNumberOfPolicies(),
             "Invalid policy ID"
         );
 
-        uint256 valueOfPolicy = policies[_policyId].policyValue;
+        require(hacks[_hackId].accepted == false, "Hack already approved");
 
-        hacks[_policyId].accepted = true;
-        hacks[_policyId].timeOfPayout = block.timestamp;
-        hacks[_policyId].amountPaidOut = valueOfPolicy;
+        uint256 valueOfPolicy = policies[policyId].policyValue;
+
+        hacks[_hackId].accepted = true;
+        hacks[_hackId].timeOfPayout = block.timestamp;
+        hacks[_hackId].amountPaidOut = valueOfPolicy;
 
         manager.distributeHackFunds(policies[_policyId].owner, valueOfPolicy);
     }
 
-    function rejectHack(uint256 _policyId) external onlyOwner {
+    /**
+    @notice Rejecting a hack, only done by owner
+    @param _hackId Policy the hack is being approved for
+     */
+    function rejectHack(uint256 _hackId) external onlyOwner {
+        uint256 policyId = hacks[_hackId].policyId;
+
         require(
-            _policyId < insurance.getNumberOfPolicies(),
+            policyId < insurance.getNumberOfPolicies(),
             "Invalid policy ID"
         );
 
-        hacks[_policyId].accepted = false;
-        hacks[_policyId].timeOfPayout = 0;
-        hacks[_policyId].amountPaidOut = 0;
+        hacks[_hackId].accepted = false;
+        hacks[_hackId].timeOfPayout = 0;
+        hacks[_hackId].amountPaidOut = 0;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

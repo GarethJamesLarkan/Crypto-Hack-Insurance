@@ -158,6 +158,11 @@ contract FundManager {
         }
     }
 
+    /**
+    @notice Distributing the funds when a hack has been approved
+    @param _to Address of the owner of the policy being paid out.
+    @param _amount Amount to pay out.
+     */
     function distributeHackFunds(address _to, uint256 _amount) external {
         require(msg.sender == address(insurance), "Incorrect caller");
 
