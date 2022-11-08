@@ -137,26 +137,6 @@ contract FundManager {
     }
 
     /**
-    @notice User claiming they have been hacked and the contract paying them out.
-    @dev FUTURE: Wont be able to just claim, will be onlyOwner and will be a review process.
-    @param _policyId ID of the policy the user is claiming.
-     */
-    function claimHack(uint256 _policyId) public {
-        require(
-            _policyId < insurance.getNumberOfPolicies(),
-            "Invalid policy ID"
-        );
-        require(
-            insurance.getPolicyOwner(_policyId) == msg.sender,
-            "Not correct caller"
-        );
-
-        uint256 policyVal = insurance.getPolicyValue(_policyId);
-        insurance.addHack(_policyId, policyVal, true);
-        usdc.transfer(msg.sender, policyVal);
-    }
-
-    /**
     @notice Owner transferring ownership of contract to another address.
     @param _newOwner Address of the new owner of the contract.
      */

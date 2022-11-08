@@ -158,6 +158,25 @@ contract Insurance {
     }
 
     /**
+    @notice User claiming they have been hacked and the contract paying them out.
+    @dev FUTURE: Wont be able to just claim, will be onlyOwner and will be a review process.
+    @param _policyId ID of the policy the user is claiming.
+     */
+    function registerHack(uint256 _policyId) public {
+        require(
+            _policyId < insurance.getNumberOfPolicies(),
+            "Invalid policy ID"
+        );
+        require(
+            insurance.getPolicyOwner(_policyId) == msg.sender,
+            "Not correct caller"
+        );
+
+        uint256 policyVal = insurance.getPolicyValue(_policyId);
+        addHack(_policyId, policyVal, false);
+    }
+
+    /**
     @notice Adding information about a hack to the relevant data structure.
     @param _policyId The ID of the policy the hack refers to.
     @param _amountPaid The value of the payout for the hack.
@@ -173,13 +192,37 @@ contract Insurance {
         hacks[numberOfHacks] = Hack({
             hackId: numberOfHacks,
             policyId: _policyId,
-            amountPaidOut: _amountPaid,
+            amountPaidOut: 0,
             accepted: _accepted,
-            timeOfPayout: block.timestamp
+            timeOfPayout: 0
         });
 
         policies[_policyId].closed = true;
         numberOfHacks++;
+    }
+
+    function approveHack(uint256 _policyId) external onlyOwner {
+        require(
+            _policyId < insurance.getNumberOfPolicies(),
+            "Invalid policy ID"
+        );
+
+        uint256 valueOfPolicy = policies[_policyId].policyValue;
+
+        hacks[_policyId].accepted = true;
+        hacks[_policyId].timeOfPayout = block.timestamp;
+        hacks[_policyId].amountPaidOut = valueOfPolicy;
+    }
+
+    function rejectHack(uint256 _policyId) external onlyOwner {
+        require(
+            _policyId < insurance.getNumberOfPolicies(),
+            "Invalid policy ID"
+        );
+
+        hacks[_policyId].accepted = false;
+        hacks[_policyId].timeOfPayout = 0;
+        hacks[_policyId].amountPaidOut = 0;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
