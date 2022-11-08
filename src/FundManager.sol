@@ -45,6 +45,7 @@ contract FundManager {
 
     event UpdatedFeePercentage(uint256 newFeePercentage);
     event TransferredOwnership(address newOwner);
+    event ClaimPaid(address reciever, uint256 amountPaid);
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //--------------------------------------------------------- CONSTRUCTOR ------------------------------------------------------------
@@ -167,6 +168,8 @@ contract FundManager {
         require(msg.sender == address(insurance), "Incorrect caller");
 
         usdc.transfer(_to, _amount);
+
+        emit ClaimPaid(_to, _amount);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
