@@ -60,6 +60,9 @@ contract Insurance {
     //----------------------------------------------------------------------------------------------------------------------------------
 
     event TransferredOwnership(address newOwner);
+    event ApproveHack(uint256 hackId, uint256 amountPaidOut);
+    event RejectHack(uint256 hackId);
+    event HackAdded(uint256 hackiD, uint256 policyId);
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------- CONSTRUCTOR -------------------------------------------------------------
@@ -158,11 +161,14 @@ contract Insurance {
     }
 
     /**
-    @notice User claiming they have been hacked and the contract paying them out.
-    @dev FUTURE: Wont be able to just claim, will be onlyOwner and will be a review process.
-    @param _policyId ID of the policy the user is claiming.
+    @notice Adding information about a hack to the relevant data structure.
+    @param _policyId The ID of the policy the hack refers to.
      */
-    function registerHack(uint256 _policyId) public {
+    function addHack(
+        uint256 _policyId
+    ) public {
+        require(policies[_policyId].closed == false, "Policy has been closed");
+
         require(
             _policyId < insurance.getNumberOfPolicies(),
             "Invalid policy ID"
@@ -171,19 +177,6 @@ contract Insurance {
             insurance.getPolicyOwner(_policyId) == msg.sender,
             "Not correct caller"
         );
-
-        uint256 policyVal = insurance.getPolicyValue(_policyId);
-        addHack(_policyId, policyVal, false);
-    }
-
-    /**
-    @notice Adding information about a hack to the relevant data structure.
-    @param _policyId The ID of the policy the hack refers to.
-     */
-    function addHack(
-        uint256 _policyId
-    ) public {
-        require(policies[_policyId].closed == false, "Policy has been closed");
 
         hacks[numberOfHacks] = Hack({
             hackId: numberOfHacks,
@@ -195,6 +188,8 @@ contract Insurance {
 
         policies[_policyId].closed = true;
         numberOfHacks++;
+
+        emit HackAdded(numberOfHacks-1, _policyId);
     }
 
     /**
@@ -220,6 +215,8 @@ contract Insurance {
         tempHack.amountPaidOut = valueOfPolicy;
 
         manager.distributeHackFunds(policies[_policyId].owner, valueOfPolicy);
+
+        emit ApproveHack(_hackId, valueOfPolicy);
     }
 
     /**
@@ -239,6 +236,8 @@ contract Insurance {
         tempHack.accepted = false;
         tempHack.timeOfPayout = 0;
         tempHack.amountPaidOut = 0;
+
+        emit RejectHack(_hackId);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
