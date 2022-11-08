@@ -14,7 +14,6 @@ contract CHToken is ERC20 {
     @param _usdcAddress Address of the USDC token.
      */
     constructor(address _usdcAddress) ERC20("Crypto Hack Token", "CHT") {
-        mint(msg.sender, 1000);
         usdc = IERC20(_usdcAddress);
     }
 

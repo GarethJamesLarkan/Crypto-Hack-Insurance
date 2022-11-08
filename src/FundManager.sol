@@ -155,7 +155,6 @@ contract FundManager {
         uint256 totalCHTokenSupply = token.totalSupply();
 
         for(uint256 x = 0; x < token.numberOfHolders(); x++){
-
         }
     }
 
@@ -166,7 +165,7 @@ contract FundManager {
      */
     function distributeHackFunds(address _to, uint256 _amount) external {
         require(msg.sender == address(insurance), "Incorrect caller");
-
+        console.log(1);
         usdc.transfer(_to, _amount);
 
         emit ClaimPaid(_to, _amount);

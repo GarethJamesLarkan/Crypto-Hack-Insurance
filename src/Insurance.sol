@@ -170,11 +170,11 @@ contract Insurance {
         require(policies[_policyId].closed == false, "Policy has been closed");
 
         require(
-            _policyId < insurance.getNumberOfPolicies(),
+            _policyId < numberOfPolicies,
             "Invalid policy ID"
         );
         require(
-            insurance.getPolicyOwner(_policyId) == msg.sender,
+            policies[_policyId].owner == msg.sender,
             "Not correct caller"
         );
 
@@ -202,7 +202,7 @@ contract Insurance {
         uint256 policyId = tempHack.policyId;
         
         require(
-            policyId < insurance.getNumberOfPolicies(),
+            policyId < numberOfPolicies,
             "Invalid policy ID"
         );
 
@@ -214,7 +214,8 @@ contract Insurance {
         tempHack.timeOfPayout = block.timestamp;
         tempHack.amountPaidOut = valueOfPolicy;
 
-        manager.distributeHackFunds(policies[_policyId].owner, valueOfPolicy);
+        //How to get manager address??
+        manager.distributeHackFunds(policies[policyId].owner, valueOfPolicy);
 
         emit ApproveHack(_hackId, valueOfPolicy);
     }
@@ -229,7 +230,7 @@ contract Insurance {
         uint256 policyId = tempHack.policyId;
 
         require(
-            policyId < insurance.getNumberOfPolicies(),
+            policyId < numberOfPolicies,
             "Invalid policy ID"
         );
 
