@@ -138,6 +138,32 @@ contract FundManager {
     }
 
     /**
+    @notice Approving a hack, only done by owner
+    @param _hackId Policy the hack is being approved for
+     */
+    function approveHack(uint256 _hackId) external onlyOwner {
+
+        uint256 policyId = insurance.getHack(_hackId).policyId;
+        
+        require(
+            policyId < insurance.getNumberOfPolicies(),
+            "Invalid policy ID"
+        );
+
+        require(insurance.getHack(_hackId).accepted == false, "Hack already approved");
+
+        uint256 valueOfPolicy = insurance.getPolicyValue(policyId);
+        address policyOwner = insurance.getPolicyOwner(policyId);
+
+        insurance.updateHackAfterApproval(_hackId, valueOfPolicy);
+
+        usdc.transfer(policyOwner, valueOfPolicy);
+
+        //emit ApproveHack(_hackId, valueOfPolicy);
+    }
+
+
+    /**
     @notice Owner transferring ownership of contract to another address.
     @param _newOwner Address of the new owner of the contract.
      */

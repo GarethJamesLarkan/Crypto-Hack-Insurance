@@ -192,15 +192,22 @@ contract InsuranceTests is Test {
         vm.stopPrank();
         
         vm.prank(owner);
-        insuranceInstance.approveHack(0);
+        managerInstance.approveHack(0);
 
         assertEq(token.balanceOf(alice), 310000);
         assertEq(token.balanceOf(address(managerInstance)), 10000);
+        
+        (
+            uint256 hackIdAfter,
+            uint256 policyIdAfter,
+            uint256 amountPaidOutAfter,
+            bool acceptedAfter,
+        ) = insuranceInstance.hacks(0);
 
-        assertEq(hackId, 0);
-        assertEq(policyId, 0);
-        assertEq(amountPaidOut, 10000);
-        assertEq(accepted, true);
+        assertEq(hackIdAfter, 0);
+        assertEq(policyIdAfter, 0);
+        assertEq(amountPaidOutAfter, 10000);
+        assertEq(acceptedAfter, true);
 
         (, , , , , , bool closed, ) = insuranceInstance.policies(0);
         assertEq(closed, true);

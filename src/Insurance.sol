@@ -3,10 +3,11 @@ pragma solidity =0.8.13;
 
 import {console} from "forge-std/console.sol";
 import "./Interfaces/IFundManager.sol";
+import "./Interfaces/IInsurance.sol";
 import "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {console} from "forge-std/console.sol";
 
-contract Insurance {
+contract Insurance is IInsurance {
     //----------------------------------------------------------------------------------------------------------------------------------
     //-------------------------------------------------------------- STRUCTS -----------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -27,14 +28,6 @@ contract Insurance {
         uint256 safetyRating;
     }
 
-    struct Hack {
-        uint256 hackId;
-        uint256 policyId;
-        uint256 amountPaidOut;
-        bool accepted;
-        uint256 timeOfPayout;
-    }
-
     //----------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------ STATE VARIABLES -----------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -52,7 +45,7 @@ contract Insurance {
 
     mapping(uint256 => Policy) public policies;
     mapping(uint256 => HoldingCompany) public holdingCompanies;
-    mapping(uint256 => Hack) public hacks;
+    mapping(uint256 => IInsurance.Hack) public hacks;
     mapping(address => uint256) public numberOfPoliciesPerUser;
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -178,7 +171,7 @@ contract Insurance {
             "Not correct caller"
         );
 
-        hacks[numberOfHacks] = Hack({
+        hacks[numberOfHacks] = IInsurance.Hack({
             hackId: numberOfHacks,
             policyId: _policyId,
             amountPaidOut: 0,
@@ -192,41 +185,14 @@ contract Insurance {
         emit HackAdded(numberOfHacks-1, _policyId);
     }
 
-    /**
-    @notice Approving a hack, only done by owner
-    @param _hackId Policy the hack is being approved for
-     */
-    function approveHack(uint256 _hackId) external onlyOwner {
-
-        Hack storage tempHack = hacks[_hackId];
-        uint256 policyId = tempHack.policyId;
-        
-        require(
-            policyId < numberOfPolicies,
-            "Invalid policy ID"
-        );
-
-        require(tempHack.accepted == false, "Hack already approved");
-
-        uint256 valueOfPolicy = policies[policyId].policyValue;
-
-        tempHack.accepted = true;
-        tempHack.timeOfPayout = block.timestamp;
-        tempHack.amountPaidOut = valueOfPolicy;
-
-        //How to get manager address??
-        manager.distributeHackFunds(policies[policyId].owner, valueOfPolicy);
-
-        emit ApproveHack(_hackId, valueOfPolicy);
-    }
-
+    
     /**
     @notice Rejecting a hack, only done by owner
     @param _hackId Policy the hack is being approved for
      */
     function rejectHack(uint256 _hackId) external onlyOwner {
         
-        Hack storage tempHack = hacks[_hackId];
+        IInsurance.Hack storage tempHack = hacks[_hackId];
         uint256 policyId = tempHack.policyId;
 
         require(
@@ -254,6 +220,12 @@ contract Insurance {
         owner = _newOwner;
 
         emit TransferredOwnership(_newOwner);
+    }
+
+    function updateHackAfterApproval(uint256 _hackId, uint256 _valueOfPolicy) external {
+        hacks[_hackId].accepted = true;
+        hacks[_hackId].timeOfPayout = block.timestamp;
+        hacks[_hackId].amountPaidOut = _valueOfPolicy;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -284,6 +256,10 @@ contract Insurance {
      */
     function getPolicyOwner(uint256 _policyId) public view returns (address) {
         return policies[_policyId].owner;
+    }
+
+    function getHack(uint256 _hackId) public view returns(IInsurance.Hack memory) {
+        return hacks[_hackId];
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
