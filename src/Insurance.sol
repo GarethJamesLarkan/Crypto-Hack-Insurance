@@ -202,20 +202,22 @@ contract Insurance {
     @param _hackId Policy the hack is being approved for
      */
     function approveHack(uint256 _hackId) external onlyOwner {
-        uint256 policyId = hacks[_hackId].policyId;
+
+        Hack storage tempHack = hacks[_hackId];
+        uint256 policyId = tempHack.policyId;
         
         require(
             policyId < insurance.getNumberOfPolicies(),
             "Invalid policy ID"
         );
 
-        require(hacks[_hackId].accepted == false, "Hack already approved");
+        require(tempHack.accepted == false, "Hack already approved");
 
         uint256 valueOfPolicy = policies[policyId].policyValue;
 
-        hacks[_hackId].accepted = true;
-        hacks[_hackId].timeOfPayout = block.timestamp;
-        hacks[_hackId].amountPaidOut = valueOfPolicy;
+        tempHack.accepted = true;
+        tempHack.timeOfPayout = block.timestamp;
+        tempHack.amountPaidOut = valueOfPolicy;
 
         manager.distributeHackFunds(policies[_policyId].owner, valueOfPolicy);
     }
