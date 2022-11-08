@@ -17,9 +17,8 @@ Crypto hack insurance is a web3 app which allows users to insure their crypto ho
   
   FUTURE UPGRADES:
   
-  1. Full review system before claim gets paid out.
-  2. Initial funding phase where users purchase CH Tokens and get rewarded with governance power.
-  3. Stake the initial phase funds to make sure platform does not loose its liquidity.
+  1. Initial funding phase where users purchase CH Tokens and get rewarded with governance power.
+  2. Stake the initial phase funds to make sure platform does not loose its liquidity.
   
 Foundry setup:
 
