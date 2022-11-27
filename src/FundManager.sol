@@ -15,7 +15,7 @@ contract FundManager is IFundManager {
     //------------------------------------------------------ STATE VARIABLES -----------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
 
-    uint256 public numberOfLiquidityProviders;
+    uint256 public numberOfLiquidityProviders = 1;
     uint256 public totalLiquidityProvided;
     uint256 public feePercentage;
     uint256 public totalFees;
@@ -30,7 +30,6 @@ contract FundManager is IFundManager {
     //----------------------------------------------------------------------------------------------------------------------------------
 
     mapping(uint256 => LiquidityProvider) public providers;
-    mapping(address => uint256) public providerToId;
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //----------------------------------------------------------- EVENTS ---------------------------------------------------------------
@@ -74,7 +73,6 @@ contract FundManager is IFundManager {
             policyProfits: 0
         });
 
-        providerToId[msg.sender] = numberOfLiquidityProviders;
         numberOfLiquidityProviders++;
     }
 
@@ -86,10 +84,10 @@ contract FundManager is IFundManager {
      */
     function addLiquidity(uint256 _providerId, uint256 _amount) public {
         require(
-            _providerId <= numberOfLiquidityProviders,
+            _providerId < numberOfLiquidityProviders,
             "Invalid provider ID"
         );
-        require(providerToId[msg.sender] == _providerId, "Not correct caller");
+        require(providers[_providerId].wallet == msg.sender, "Not correct caller");
 
         providers[_providerId].valueOfLiquidity += _amount;
         totalLiquidityProvided += _amount;

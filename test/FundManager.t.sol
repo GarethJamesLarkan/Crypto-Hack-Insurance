@@ -22,6 +22,11 @@ contract FundManagerTests is Test {
     address liquidityProvider1 = vm.addr(6);
     address liquidityProvider2 = vm.addr(7);
 
+    event UpdatedFeePercentage(uint256 newFeePercentage);
+    event TransferredOwnership(address newOwner);
+    event ClaimPaid(address reciever, uint256 amountPaid);
+    event ApproveHack(uint256 hackId, uint256 value);
+
     function setUp() public {
         vm.startPrank(owner);
         token = new MockUSDC();
@@ -53,12 +58,6 @@ contract FundManagerTests is Test {
     }
 
     function testSetFeePercentageFailsWhenNonOwnerCalls() public {
-        vm.startPrank(alice);
-        vm.expectRevert("Only owner function");
-        managerInstance.setFeePercentage(70);
-    }
-
-    function testSetFeePercentageEmitsEvent() public {
         vm.startPrank(alice);
         vm.expectRevert("Only owner function");
         managerInstance.setFeePercentage(70);
@@ -208,7 +207,7 @@ contract FundManagerTests is Test {
 
         vm.startPrank(liquidityProvider1);
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000);
+        managerInstance.addLiquidity(1, 20000);
 
         assertEq(token.balanceOf(liquidityProvider1), 280000);
         assertEq(token.balanceOf(address(managerInstance)), 20000);
@@ -342,7 +341,7 @@ contract FundManagerTests is Test {
         token.approve(address(managerInstance), 300000);
 
         managerInstance.createNewLiquidityProvider();
-        managerInstance.addLiquidity(0, 20000);
+        managerInstance.addLiquidity(1, 20000);
         assertEq(token.balanceOf(address(managerInstance)), 20000);
         assertEq(token.balanceOf(alice), 280000);
 
@@ -360,7 +359,7 @@ contract FundManagerTests is Test {
         token.approve(address(managerInstance), 300000);
 
         managerInstance.createNewLiquidityProvider();
-        managerInstance.addLiquidity(0, 20000);
+        managerInstance.addLiquidity(1, 20000);
 
         assertEq(token.balanceOf(address(managerInstance)), 20000);
         assertEq(token.balanceOf(alice), 280000);
@@ -371,7 +370,7 @@ contract FundManagerTests is Test {
 
         assertEq(valueOfLiquidity, 20000);
 
-        managerInstance.addLiquidity(0, 50000);
+        managerInstance.addLiquidity(1, 50000);
 
         assertEq(token.balanceOf(address(managerInstance)), 70000);
         assertEq(token.balanceOf(alice), 230000);
@@ -381,5 +380,33 @@ contract FundManagerTests is Test {
         );
 
         assertEq(valueOfLiquidity2, 70000);
+    }
+
+    function testAddLiquidityFailsWhenProviderIDIsInvalid() public {
+        vm.startPrank(alice);
+
+        token.mint(alice, 300000);
+        token.approve(address(managerInstance), 300000);
+
+        managerInstance.createNewLiquidityProvider();
+
+        vm.expectRevert("Invalid provider ID");
+        managerInstance.addLiquidity(2, 20000);
+    }
+
+    function testAddLiquidityFailsWhenCallerIsIncorrect() public {
+        vm.startPrank(alice);
+
+        token.mint(alice, 300000);
+        token.approve(address(managerInstance), 300000);
+
+        managerInstance.createNewLiquidityProvider();
+        vm.stopPrank();
+
+        vm.startPrank(alice);
+        vm.expectRevert("Not correct caller");
+        managerInstance.addLiquidity(1, 20000);
+        vm.stopPrank();
+
     }
 }
