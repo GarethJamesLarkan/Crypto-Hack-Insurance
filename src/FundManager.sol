@@ -66,6 +66,7 @@ contract FundManager is IFundManager {
     @notice Creating a new liquidity provider object to store their information.
      */
     function createNewLiquidityProvider() public {
+    
         providers[numberOfLiquidityProviders] = LiquidityProvider({
             id: numberOfLiquidityProviders,
             wallet: msg.sender,
@@ -126,7 +127,7 @@ contract FundManager is IFundManager {
 
         uint256 distritutionAmount = _amount - feeAmount;
 
-        for (uint256 x = 0; x < numberOfProviders; x++) {
+        for (uint256 x = 1; x < numberOfProviders; x++) {
             LiquidityProvider memory provider = providers[x];
             uint256 portion = (provider.valueOfLiquidity * 100) /
                 totalLiquidity;

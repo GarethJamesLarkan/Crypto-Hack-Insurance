@@ -180,7 +180,7 @@ contract FundManagerTests is Test {
         vm.prank(liquidityProvider2);
         managerInstance.createNewLiquidityProvider();
 
-        assertEq(managerInstance.numberOfLiquidityProviders(), 2);
+        assertEq(managerInstance.numberOfLiquidityProviders() - 1 , 2);
 
         //Making sure the LP have been correctly instantiated
         (
@@ -188,8 +188,8 @@ contract FundManagerTests is Test {
             address wallet,
             uint256 valueOfLiquidity,
             uint256 policyProfits
-        ) = managerInstance.providers(0);
-        assertEq(id, 0);
+        ) = managerInstance.providers(1);
+        assertEq(id, 1);
         assertEq(wallet, liquidityProvider1);
         assertEq(valueOfLiquidity, 0);
         assertEq(policyProfits, 0);
@@ -199,8 +199,8 @@ contract FundManagerTests is Test {
             address wallet2,
             uint256 valueOfLiquidity2,
             uint256 policyProfits2
-        ) = managerInstance.providers(1);
-        assertEq(id2, 1);
+        ) = managerInstance.providers(2);
+        assertEq(id2, 2);
         assertEq(wallet2, liquidityProvider2);
         assertEq(valueOfLiquidity2, 0);
         assertEq(policyProfits2, 0);
@@ -215,7 +215,7 @@ contract FundManagerTests is Test {
 
         vm.startPrank(liquidityProvider2);
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(1, 20000);
+        managerInstance.addLiquidity(2, 20000);
 
         assertEq(token.balanceOf(liquidityProvider2), 280000);
         assertEq(token.balanceOf(address(managerInstance)), 40000);
@@ -345,9 +345,7 @@ contract FundManagerTests is Test {
         assertEq(token.balanceOf(address(managerInstance)), 20000);
         assertEq(token.balanceOf(alice), 280000);
 
-        (, , uint256 valueOfLiquidity, ) = managerInstance.providers(
-            managerInstance.providerToId(alice)
-        );
+        (, , uint256 valueOfLiquidity, ) = managerInstance.providers(1);
 
         assertEq(valueOfLiquidity, 20000);
     }
@@ -365,7 +363,7 @@ contract FundManagerTests is Test {
         assertEq(token.balanceOf(alice), 280000);
 
         (, , uint256 valueOfLiquidity, ) = managerInstance.providers(
-            managerInstance.providerToId(alice)
+            1
         );
 
         assertEq(valueOfLiquidity, 20000);
@@ -376,7 +374,7 @@ contract FundManagerTests is Test {
         assertEq(token.balanceOf(alice), 230000);
 
         (, , uint256 valueOfLiquidity2, ) = managerInstance.providers(
-            managerInstance.providerToId(alice)
+            1
         );
 
         assertEq(valueOfLiquidity2, 70000);
@@ -403,7 +401,7 @@ contract FundManagerTests is Test {
         managerInstance.createNewLiquidityProvider();
         vm.stopPrank();
 
-        vm.startPrank(alice);
+        vm.startPrank(owner);
         vm.expectRevert("Not correct caller");
         managerInstance.addLiquidity(1, 20000);
         vm.stopPrank();

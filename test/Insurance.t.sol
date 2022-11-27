@@ -83,7 +83,7 @@ contract InsuranceTests is Test {
         vm.startPrank(liquidityProvider1);
         managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000);
+        managerInstance.addLiquidity(1, 20000);
         vm.stopPrank();
 
         //Alice creating a policy
@@ -94,9 +94,6 @@ contract InsuranceTests is Test {
         assertEq(token.balanceOf(address(managerInstance)), 20000);
 
         insuranceInstance.addHack(0);
-
-        //assertEq(token.balanceOf(alice), 310000);
-        //assertEq(token.balanceOf(address(managerInstance)), 10000);
 
         (
             uint256 hackId,
@@ -128,7 +125,7 @@ contract InsuranceTests is Test {
         vm.startPrank(liquidityProvider1);
         managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000);
+        managerInstance.addLiquidity(1, 20000);
         vm.stopPrank();
 
         //Alice creating a policy
@@ -170,7 +167,7 @@ contract InsuranceTests is Test {
         vm.startPrank(liquidityProvider1);
         managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000);
+        managerInstance.addLiquidity(1, 20000);
         vm.stopPrank();
 
         //Alice creating a policy
@@ -227,7 +224,7 @@ contract InsuranceTests is Test {
         vm.startPrank(liquidityProvider1);
         managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000);
+        managerInstance.addLiquidity(1, 20000);
         vm.stopPrank();
 
         //Alice creating a policy
@@ -254,7 +251,7 @@ contract InsuranceTests is Test {
         vm.startPrank(liquidityProvider1);
         managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000);
+        managerInstance.addLiquidity(1, 20000);
         vm.stopPrank();
 
         //Alice creating a policy
@@ -285,7 +282,7 @@ contract InsuranceTests is Test {
         vm.startPrank(liquidityProvider1);
         managerInstance.createNewLiquidityProvider();
         token.approve(address(managerInstance), 4000000);
-        managerInstance.addLiquidity(0, 20000);
+        managerInstance.addLiquidity(1, 20000);
         vm.stopPrank();
 
         //Alice creating a policy
