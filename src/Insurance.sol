@@ -8,25 +8,7 @@ import "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {console} from "forge-std/console.sol";
 
 contract Insurance is IInsurance {
-    //----------------------------------------------------------------------------------------------------------------------------------
-    //-------------------------------------------------------------- STRUCTS -----------------------------------------------------------
-    //----------------------------------------------------------------------------------------------------------------------------------
-
-    struct Policy {
-        uint256 policyUniqueIdentifier;
-        uint256 policyValue;
-        uint256 monthlyInstallment;
-        uint256 numberOfInstallments;
-        uint256 valueOfInstallments;
-        uint256 companyFundsInvestedIn;
-        bool closed;
-        address owner;
-    }
-
-    struct HoldingCompany {
-        uint256 id;
-        uint256 safetyRating;
-    }
+    
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------ STATE VARIABLES -----------------------------------------------------------

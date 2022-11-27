@@ -35,6 +35,11 @@ contract FundManagerTests is Test {
         vm.stopPrank();
     }
 
+    function testDeploymentWorks() public {
+        assertEq(managerInstance.insuranceAddress(), address(insuranceInstance));
+        assertEq(managerInstance.owner(), address(owner));
+    }
+
     function testSetFeePercentage() public {
         vm.prank(owner);
         managerInstance.setFeePercentage(20);
@@ -48,6 +53,12 @@ contract FundManagerTests is Test {
     }
 
     function testSetFeePercentageFailsWhenNonOwnerCalls() public {
+        vm.startPrank(alice);
+        vm.expectRevert("Only owner function");
+        managerInstance.setFeePercentage(70);
+    }
+
+    function testSetFeePercentageEmitsEvent() public {
         vm.startPrank(alice);
         vm.expectRevert("Only owner function");
         managerInstance.setFeePercentage(70);
