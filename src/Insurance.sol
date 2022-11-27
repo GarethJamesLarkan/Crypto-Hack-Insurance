@@ -234,40 +234,6 @@ contract Insurance is IInsurance {
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    //-------------------------------------------------------------- GETTERS -----------------------------------------------------------
-    //----------------------------------------------------------------------------------------------------------------------------------
-
-    /**
-    @notice Gets the number of policies currently in place.
-    @return numberOfPolicies The current number of policies.
-     */
-    function getNumberOfPolicies() public view returns (uint256) {
-        return numberOfPolicies;
-    }
-
-    /**
-    @notice Returns the value of the specified policy.
-    @param _policyId The id of the requested policy.
-    @return policyValue The value of the policy for the given ID.
-     */
-    function getPolicyValue(uint256 _policyId) public view returns (uint256) {
-        return policies[_policyId].policyValue;
-    }
-
-    /**
-    @notice Returns the owner of the specified policy.
-    @param _policyId The id of the requested policy.
-    @return policyOwner The owner of the policy for the given ID.
-     */
-    function getPolicyOwner(uint256 _policyId) public view returns (address) {
-        return policies[_policyId].owner;
-    }
-
-    function getHack(uint256 _hackId) public view returns(IInsurance.Hack memory) {
-        return hacks[_hackId];
-    }
-
-    //----------------------------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------MODIFIERS-------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------------------------------------
 

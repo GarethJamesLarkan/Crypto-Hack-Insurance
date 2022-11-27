@@ -3,6 +3,7 @@ pragma solidity =0.8.13;
 
 import "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "./Interfaces/IInsurance.sol";
+import "./Insurance.sol";
 import "./CHToken.sol";
 
 import {console} from "forge-std/console.sol";
@@ -28,6 +29,7 @@ contract FundManager {
     uint256 public feePercentage;
     uint256 public totalFees;
     address public owner;
+    address public insuranceAddress;
     IERC20 usdc;
     CHToken token;
     IInsurance insurance;
@@ -61,7 +63,8 @@ contract FundManager {
     constructor(address _usdcAddress, address _insuranceAddress, address _chTokenAddress) {
         usdc = IERC20(_usdcAddress);
         token = CHToken(_chTokenAddress);
-        insurance = IInsurance(_insuranceAddress);
+        insuranceAddress = _insuranceAddress;
+        insurance = IInsurance(insuranceAddress);
         owner = msg.sender;
     }
 
@@ -109,12 +112,17 @@ contract FundManager {
     @param _amount The amount of USDC to be sent to the contract.
      */
     function payPolicyInstallment(uint256 _policyId, uint256 _amount) public {
+
+        Insurance insuranceInstance = Insurance(insuranceAddress);
+
+        (,,,,,,, address policyOwner) = insuranceInstance.policies(_policyId);
+
         require(
-            _policyId < insurance.getNumberOfPolicies(),
+            _policyId < insuranceInstance.numberOfPolicies(),
             "Invalid policy ID"
         );
         require(
-            insurance.getPolicyOwner(_policyId) == msg.sender,
+            policyOwner == msg.sender,
             "Not policy owner"
         );
 
@@ -144,23 +152,23 @@ contract FundManager {
      */
     function approveHack(uint256 _hackId) external onlyOwner {
 
-        uint256 policyId = insurance.getHack(_hackId).policyId;
+        Insurance insuranceInstance = Insurance(insuranceAddress);
+
+        (, uint256 policyId,, bool accepted,) = insuranceInstance.hacks(_hackId);
         
         require(
-            policyId < insurance.getNumberOfPolicies(),
+            policyId < insuranceInstance.numberOfPolicies(),
             "Invalid policy ID"
         );
 
-        require(insurance.getHack(_hackId).accepted == false, "Hack already approved");
+        require(accepted == false, "Hack already approved");
+        
+        (, uint256 policyValue,,,,,, address policyOwner) = insuranceInstance.policies(policyId);
 
-        uint256 valueOfPolicy = insurance.getPolicyValue(policyId);
-        address policyOwner = insurance.getPolicyOwner(policyId);
+        insurance.updateHackAfterApproval(_hackId, policyValue);
+        usdc.transfer(policyOwner, policyValue);
 
-        insurance.updateHackAfterApproval(_hackId, valueOfPolicy);
-
-        usdc.transfer(policyOwner, valueOfPolicy);
-
-        emit ApproveHack(_hackId, valueOfPolicy);
+        emit ApproveHack(_hackId, policyValue);
     }
 
 
