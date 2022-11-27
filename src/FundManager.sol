@@ -99,13 +99,12 @@ contract FundManager is IFundManager {
     @notice User paying one of their installments to the contract in USDC.
     @dev User must approve contract before calling function.
     @param _policyId ID of the policy the user is paying an installment for.
-    @param _amount The amount of USDC to be sent to the contract.
      */
-    function payPolicyInstallment(uint256 _policyId, uint256 _amount) public {
+    function payPolicyInstallment(uint256 _policyId) public {
 
         Insurance insuranceInstance = Insurance(insuranceAddress);
 
-        (,,,,,,, address policyOwner) = insuranceInstance.policies(_policyId);
+        (,, uint256 installment,,,,, address policyOwner) = insuranceInstance.policies(_policyId);
 
         require(
             _policyId < insuranceInstance.numberOfPolicies(),
@@ -116,16 +115,16 @@ contract FundManager is IFundManager {
             "Not policy owner"
         );
 
-        usdc.transferFrom(msg.sender, address(this), _amount);
-        insurance.addPolicyPayment(_amount, _policyId);
+        usdc.transferFrom(msg.sender, address(this), installment);
+        insurance.addPolicyPayment(installment, _policyId);
 
         uint256 totalLiquidity = totalLiquidityProvided;
         uint256 numberOfProviders = numberOfLiquidityProviders;
-        uint256 feeAmount = (_amount * feePercentage) / 100;
+        uint256 feeAmount = (installment * feePercentage) / 100;
 
         totalFees += feeAmount;
 
-        uint256 distritutionAmount = _amount - feeAmount;
+        uint256 distritutionAmount = installment - feeAmount;
 
         for (uint256 x = 1; x < numberOfProviders; x++) {
             LiquidityProvider memory provider = providers[x];
@@ -181,18 +180,6 @@ contract FundManager is IFundManager {
 
         for(uint256 x = 0; x < token.numberOfHolders(); x++){
         }
-    }
-
-    /**
-    @notice Distributing the funds when a hack has been approved
-    @param _to Address of the owner of the policy being paid out.
-    @param _amount Amount to pay out.
-     */
-    function distributeHackFunds(address _to, uint256 _amount) external {
-        require(msg.sender == address(insurance), "Incorrect caller");
-        usdc.transfer(_to, _amount);
-
-        emit ClaimPaid(_to, _amount);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

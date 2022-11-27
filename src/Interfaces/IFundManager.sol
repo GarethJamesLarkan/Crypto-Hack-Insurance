@@ -14,6 +14,5 @@ interface IFundManager {
         uint256 policyProfits;
     }
 
-    function distributeHackFunds(address _to, uint256 _amount) external;
 
 } 

@@ -96,7 +96,7 @@ contract FundManagerTests is Test {
         token.approve(address(managerInstance), 400000);
 
         vm.expectRevert("Invalid policy ID");
-        managerInstance.payPolicyInstallment(2, 2082);
+        managerInstance.payPolicyInstallment(2);
     }
 
     function testPayInstallmentFailsWhenNonPolicyOwnerCalls() public {
@@ -115,7 +115,7 @@ contract FundManagerTests is Test {
         token.approve(address(managerInstance), 400000);
 
         vm.expectRevert("Not policy owner");
-        managerInstance.payPolicyInstallment(0, 2082);
+        managerInstance.payPolicyInstallment(0);
     }
 
     function testPayInstallmentFailsWhenPolicyHasBeenClosed() public {
@@ -135,27 +135,7 @@ contract FundManagerTests is Test {
         insuranceInstance.addHack(0);
 
         vm.expectRevert("Policy has been closed");
-        managerInstance.payPolicyInstallment(0, 82);
-    }
-
-    function testPayInstallmentFailsWhenIncorrectPaymentAmount() public {
-        token.mint(address(managerInstance), 50000);
-
-        vm.startPrank(alice);
-        token.mint(alice, 300000);
-        uint256 aliceBalanceBefore = token.balanceOf(alice);
-        vm.stopPrank();
-
-        vm.prank(owner);
-        insuranceInstance.createHoldingCompany(50);
-
-        vm.startPrank(alice);
-        insuranceInstance.createPolicy(10000, 0);
-        token.approve(address(managerInstance), 400000);
-        insuranceInstance.addHack(0);
-
-        vm.expectRevert("Incorrect payment amount");
-        managerInstance.payPolicyInstallment(0, 100);
+        managerInstance.payPolicyInstallment(0);
     }
 
     function testPayInstallmentWith2LiquidityProvidersAndTotalFeeUpdates()
@@ -279,7 +259,7 @@ contract FundManagerTests is Test {
         token.approve(address(managerInstance), 400000);
 
         vm.startPrank(alice);
-        managerInstance.payPolicyInstallment(0, 2082);
+        managerInstance.payPolicyInstallment(0);
 
         assertEq(token.balanceOf(liquidityProvider1), 280833);
         assertEq(token.balanceOf(liquidityProvider2), 280833);
@@ -307,7 +287,7 @@ contract FundManagerTests is Test {
         vm.stopPrank();
 
         vm.startPrank(bob);
-        managerInstance.payPolicyInstallment(1, 2082);
+        managerInstance.payPolicyInstallment(1);
 
         assertEq(token.balanceOf(liquidityProvider1), 281666);
         assertEq(token.balanceOf(liquidityProvider2), 281666);
